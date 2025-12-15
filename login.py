@@ -10,7 +10,7 @@ def get_connection():
     return mysql.connector.connect(
         host='localhost',
         user='root',
-        password='',
+        password='1234',
         database='bakery_busness'
     )
 
@@ -82,7 +82,7 @@ def login():
 
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM `Users` WHERE user_name=%s AND user_password=%s", (username, password))
+    cursor.execute("SELECT * FROM `User` WHERE user_name=%s AND user_password=%s", (username, password))
     user = cursor.fetchone()
     cursor.close()
     conn.close()
@@ -143,8 +143,15 @@ def activity_Tables():
         "personal_name": session.get('personal_name'),
         "job_desc": session.get('job_desc')
     }
+    
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM tables") 
+    all_tables = cursor.fetchall()
+    cursor.close()
+    conn.close()
 
-    return render_template('activity_Tables.html',user=user_info)
+    return render_template('activity_Tables.html', user=user_info, tables=all_tables)
 
 
 @app.route('/activity_Order_history')
@@ -167,4 +174,4 @@ def logout():
     return redirect(url_for('login_page'))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+ app.run(debug=True)

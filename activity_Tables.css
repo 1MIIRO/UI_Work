@@ -4,7 +4,7 @@ body {
     overflow-x: hidden;
 }
 
-/* SIDEBAR */
+/* ===================== SIDEBAR ===================== */
 .sidebar {
     height: 100%;
     width: 0;
@@ -14,8 +14,9 @@ body {
     background: #222;
     overflow-x: hidden;
     padding-top: 20px;
-    transition: 0.3s;
+    transition: width 0.3s ease;
     color: white;
+    z-index: 200;
 }
 
 .sidebar.active {
@@ -33,92 +34,46 @@ body {
     color: white;
 }
 
-/* TOP BAR */
+/* ===================== TOP BAR ===================== */
 .top-bar {
     width: 100%;
     background: #edeff0;
     padding: 10px;
-    color: white;
     font-weight: bold;
+    position: relative;
+    z-index: 150;
 }
 
 .menu-icon {
     font-size: 26px;
     cursor: pointer;
-    color: blue;  /* Make hamburger icon blue */
+    color: blue;
 }
 
-/* FORCE same color as top bar for inputs */
-.form-control.rounded-input {
-    background-color: #edeff0 !important;
-    border-radius: 14px;
-    padding: 14px 18px;
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    font-size: 15px;
-}
-
-/* Keep color on focus */
-.form-control.rounded-input:focus {
-    background-color: #edeff0 !important;
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25);
-}
-
-/* Placeholder */
-.form-control.rounded-input::placeholder {
-    color: #6c757d;
-}
-
-/* VERTICAL CONTAINER */
-.vertical-container {
-    background-color: #edeff0; /* match search bar */
-    border-radius: 14px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    height: calc(100vh - 80px); /* adjust for top bar height */
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-
-/* style links as buttons */
-.vertical-container a {
-    display: block;
-    text-align: center;
+/* ===================== ORDER TOGGLE ===================== */
+.close-order {
+    color: red;
+    cursor: pointer;
     font-weight: bold;
-    color: black; /* default text */
-    text-decoration: none;
-    padding: 12px 0;
-    border: none; /* invisible border */
-    border-radius: 8px; /* slightly rounded */
-    transition: all 0.2s ease;
-    background-color: transparent;
 }
 
-/* hover effect */
-.vertical-container a:hover,
-.vertical-container a.active {
-    background-color: #0d6efd;
-    color: white;
+.open-order {
+    color: green;
+    cursor: pointer;
+    font-weight: bold;
 }
 
-/* ORDER BUTTON */
-.close-order { color: red; cursor: pointer; font-weight: bold; }
-.open-order { color: green; cursor: pointer; font-weight: bold; }
-
-/* RIGHT ORDER PANEL */
+/* ===================== ORDER PANEL ===================== */
 .order-container {
     width: 25%;
     min-width: 250px;
     background: white;
-    color: black;
     height: 100%;
     position: fixed;
     right: -25%;
     top: 0;
-    transition: 0.4s;
-    z-index: 100;
+    transition: right 0.4s ease;
+    z-index: 300;
     display: flex;
     flex-direction: column;
     pointer-events: none;
@@ -139,7 +94,7 @@ body {
 
 .order-top-bar input {
     flex: 1;
-    padding: 5px 10px;
+    padding: 6px 10px;
     border-radius: 5px;
     border: 1px solid #aaa;
     margin: 0 5px;
@@ -151,16 +106,13 @@ body {
     border-radius: 50%;
     border: none;
     background: #fcfdff;
-    color: white;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    font-size: 16px;
 }
 
-/* DROPDOWNS */
+/* ===================== DROPDOWNS ===================== */
 .dropdown {
     position: relative;
 }
@@ -186,7 +138,6 @@ body {
 }
 
 .dropdown-content {
-    position: relative;
     background: #f0f0f0;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -194,19 +145,20 @@ body {
     padding: 5px;
 }
 
-/* SHIFT CLASSES FOR OPEN/CLOSE ORDER LOGIC */
+/* ===================== MAIN ACTIVITY SHIFT ===================== */
 #activityMain {
     transition: margin 0.3s ease;
 }
 
 #activityMain.shifted-left {
-    margin-left: 170px; /* sidebar width */
+    margin-left: 170px;
 }
 
 #activityMain.shifted-right {
-    margin-right: 25%; /* order panel width */
+    margin-right: 25%;
 }
 
+/* TOP BAR ITEM SHIFTS (DATE / ORDER TOGGLE) */
 .shifted-left-time {
     margin-left: 170px;
 }
@@ -215,70 +167,155 @@ body {
     margin-right: 25%;
 }
 
-/* TIME AND DATE BOXES */
-.date-box, .time-box {
+/* ===================== INPUTS ===================== */
+.form-control.rounded-input {
+    background-color: #edeff0 !important;
+    border-radius: 14px;
+    padding: 14px 18px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    font-size: 15px;
+}
+
+.form-control.rounded-input:focus {
+    background-color: #edeff0 !important;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25);
+}
+
+.form-control.rounded-input::placeholder {
+    color: #6c757d;
+}
+
+/* ===================== VERTICAL NAV ===================== */
+.vertical-container {
+    background-color: #edeff0;
+    border-radius: 14px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: calc(100vh - 80px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.vertical-container a {
+    text-align: center;
+    font-weight: bold;
+    color: black;
+    text-decoration: none;
+    padding: 12px 0;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.vertical-container a:hover,
+.vertical-container a.active {
+    background-color: #0d6efd;
+    color: white;
+}
+
+/* ===================== BREADCRUMB ===================== */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-main {
+    font-weight: 700;
+    color: #0d6efd;
+    font-size: 18px;
+}
+
+.breadcrumb-sub {
+    font-weight: 400;
+    color: #6c757d;
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+/* ===================== DATE BOX ===================== */
+.date-box {
     background: white;
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: 6px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .icon-button {
     background: white;
     border: none;
-    padding: 4px;
+    padding: 2px;
     border-radius: 6px;
     cursor: pointer;
 }
 
 .icon-img {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     object-fit: contain;
 }
 
-#dateText, #timeText {
+#dateText {
     font-size: 14px;
     color: #333;
+    font-weight: 500;
 }
 
-/* TOP BAR BUTTONS */
-.top-bar .btn-light.btn-sm img {
-    width: 18px;
-    height: 18px;
-    object-fit: contain;
-    vertical-align: middle;
-    margin: 0;
-    padding: 0;
+/* ===================== FLOOR PILLS ===================== */
+.pill-btn {
+    min-width: 140px;
+    max-width: 160px;
+    background-color: #edeff0;
+    border: 1.5px solid transparent;
+    color: #6c757d;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.top-bar .btn-light.btn-sm {
-    padding: 2px 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.pill-btn:hover {
+    border-color: #0d6efd;
+    color: #0d6efd;
 }
 
-.breadcrumb {
-    display: flex;
-    align-items: center;
-    font-family: Arial, sans-serif;
+/* ===================== TABLE DISPLAY ===================== */
+.table-display {
+    margin-top: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    padding: 10px;
+    transition: margin 0.3s ease;
 }
 
-.breadcrumb-main {
-    font-weight: 700;       /* bold */
-    color: #0d6efd;         /* blue */
-    font-size: 18px;        /* thicker */
+.table-card {
+    background: white;
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
 }
 
-.breadcrumb-sub {
-    font-weight: 400;       /* normal/faint */
-    color: #6c757d;         /* gray/faint */
-    font-size: 14px;        /* smaller */
-    margin-left: 5px;
+.table-card:hover {
+    transform: translateY(-5px);
+    cursor: pointer;
 }
 
+.table-number {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 6px;
+}
+
+.table-capacity {
+    color: green;
+    font-size: 15px;
+}

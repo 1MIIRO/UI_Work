@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activity</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='activity_billing_queue.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='activity_Tables.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -64,7 +64,16 @@
         <span class="breadcrumb-sub"> / Tables</span>
     </div>
 
-    <div id="orderToggle" class="ms-auto open-order top-bar-item">Open Order</div>
+    <div class="ms-auto d-flex align-items-center gap-2 top-bar-items">
+        <div class="date-box">
+            <button class="icon-button">
+                <img src="{{ url_for('static', filename='images/calendar_icon.jpg') }}" class="icon-img">
+            </button>
+            <span id="dateText">--/--/----</span>
+        </div>
+
+        <div id="orderToggle" class="open-order top-bar-item">Open Order</div>
+    </div>
 </div>
 
 <!-- MAIN ACTIVITY CONTENT -->
@@ -73,14 +82,10 @@
     <div class="container-fluid mt-3">
         <div class="row align-items-center">
             <div class="col-3">
-                <input id="search_activity" type="search"
-                       class="form-control rounded-input"
-                       placeholder="Search...">
+                <input type="search" class="form-control rounded-input" placeholder="Search...">
             </div>
             <div class="col-9">
-                <input id="add_table_activity" type="text"
-                       class="form-control rounded-input"
-                       placeholder="Add Tables">
+                <input type="text" class="form-control rounded-input" placeholder="Add Tables">
             </div>
         </div>
     </div>
@@ -90,93 +95,116 @@
             <div class="col-3">
                 <div class="vertical-container">
                     <a href="{{ url_for('activity_billing_queue') }}">Billing Queue</a>
-                    <a href="{{ url_for('activity_Tables') }}">Tables</a>
+                    <a href="{{ url_for('activity_Tables') }}" class="active">Tables</a>
                     <a href="{{ url_for('activity_Order_history') }}">Order History</a>
                 </div>
             </div>
+
             <div class="col-9">
-                <!-- right-side activity content -->
+                <div class="d-flex gap-3 mb-3">
+                    <button class="pill-btn">1st Floor</button>
+                    <button class="pill-btn">2nd Floor</button>
+                    <button class="pill-btn">3rd Floor</button>
+                </div>
+
+                <div class="table-display">
+                    {% for table in tables %}
+                    <div class="table-card" data-table-id="{{ table.Table_db_id }}">
+                        <div class="table-number">Table {{ table.Table_number }}</div>
+                        <div class="table-capacity">Capacity: {{ table.table_capacity }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
-
 </div>
 
 <!-- SCRIPT -->
 <script>
-const orderToggle = document.getElementById('orderToggle');
-const sidebar = document.getElementById('sidebar');
-const orderContainer = document.getElementById('orderContainer');
-const menuToggle = document.getElementById('menuToggle');
-const activityMain = document.getElementById('activityMain');
-const topBarItems = document.querySelectorAll('.top-bar-item');
+    function updateDateTime() {
+        const now = new Date();
+        document.getElementById('dateText').textContent = now.toLocaleDateString();
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
 
-/* SHIFT FUNCTION */
-function shiftUI(shiftSidebar, shiftOrder) {
+    const orderToggle = document.getElementById('orderToggle');
+    const sidebar = document.getElementById('sidebar');
+    const orderContainer = document.getElementById('orderContainer');
+    const menuToggle = document.getElementById('menuToggle');
+    const activityMain = document.getElementById('activityMain');
+    const topBarItems = document.querySelectorAll('.top-bar-items');
 
-    if (shiftSidebar) {
-        activityMain.classList.add('shifted-left');
-        topBarItems.forEach(el => el.classList.add('shifted-left-time'));
-    } else {
-        activityMain.classList.remove('shifted-left');
-        topBarItems.forEach(el => el.classList.remove('shifted-left-time'));
+    function shiftUI(shiftSidebar, shiftOrder) {
+        if (shiftSidebar) {
+            activityMain.classList.add('shifted-left');
+            topBarItems.forEach(el => el.classList.add('shifted-left-time'));
+        } else {
+            activityMain.classList.remove('shifted-left');
+            topBarItems.forEach(el => el.classList.remove('shifted-left-time'));
+        }
+
+        if (shiftOrder) {
+            activityMain.classList.add('shifted-right');
+            topBarItems.forEach(el => el.classList.add('shifted-right-time'));
+        } else {
+            activityMain.classList.remove('shifted-right');
+            topBarItems.forEach(el => el.classList.remove('shifted-right-time'));
+        }
     }
 
-    if (shiftOrder) {
-        activityMain.classList.add('shifted-right');
-        topBarItems.forEach(el => el.classList.add('shifted-right-time'));
-    } else {
-        activityMain.classList.remove('shifted-right');
-        topBarItems.forEach(el => el.classList.remove('shifted-right-time'));
-    }
-}
-
-/* SIDEBAR TOGGLE */
-menuToggle.addEventListener('click', () => {
-    orderContainer.classList.remove("active");
-    orderToggle.textContent = "Open Order";
-    orderToggle.classList.remove("close-order");
-    orderToggle.classList.add("open-order");
-
-    sidebar.classList.toggle('active');
-    shiftUI(sidebar.classList.contains('active'), false);
-});
-
-/* ORDER TOGGLE (IDENTICAL BEHAVIOR TO DASHBOARD) */
-orderToggle.addEventListener('click', () => {
-
-    if (orderToggle.textContent === "Open Order") {
-        orderContainer.classList.add("active");
-        orderToggle.textContent = "Close Order";
-        orderToggle.classList.remove("open-order");
-        orderToggle.classList.add("close-order");
-
-        sidebar.classList.remove('active');
-        shiftUI(false, true);
-
-    } else {
+    // SIDEBAR TOGGLE
+    menuToggle.addEventListener('click', () => {
         orderContainer.classList.remove("active");
         orderToggle.textContent = "Open Order";
         orderToggle.classList.remove("close-order");
         orderToggle.classList.add("open-order");
 
-        shiftUI(false, false);
-    }
-});
-
-/* Clicking sidebar closes it */
-sidebar.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-    shiftUI(false, false);
-});
-
-/* DROPDOWNS */
-document.querySelectorAll('.dropdown-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const content = btn.nextElementSibling;
-        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        sidebar.classList.toggle('active');
+        shiftUI(sidebar.classList.contains('active'), false);
     });
-});
+
+    // ORDER TOGGLE
+    orderToggle.addEventListener('click', () => {
+        if (orderToggle.textContent === "Open Order") {
+            orderContainer.classList.add("active");
+            orderToggle.textContent = "Close Order";
+            orderToggle.classList.remove("open-order");
+            orderToggle.classList.add("close-order");
+
+            sidebar.classList.remove('active');
+            shiftUI(false, true);
+        } else {
+            orderContainer.classList.remove("active");
+            orderToggle.textContent = "Open Order";
+            orderToggle.classList.remove("close-order");
+            orderToggle.classList.add("open-order");
+
+            shiftUI(false, false);
+        }
+    });
+
+    // Clicking sidebar closes it
+        sidebar.addEventListener('click', function () {
+            sidebar.classList.remove('active');
+            shiftUI(false, false);
+        });
+
+    // DROPDOWNS
+    document.querySelectorAll('.dropdown-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const content = btn.nextElementSibling;
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        });
+    });
+
+    // TABLE CARD CLICK
+    document.querySelectorAll('.table-card').forEach(card => {
+        card.addEventListener('click', () => {
+            alert("Selected table ID: " + card.dataset.tableId);
+        });
+    });
 </script>
 
 </body>

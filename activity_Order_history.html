@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity</title>
+    <title>Activity - Order History</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='activity_billing_queue.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='activity_Order_history.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -64,119 +64,153 @@
         <span class="breadcrumb-sub"> / Order History</span>
     </div>
 
-    <div id="orderToggle" class="ms-auto open-order top-bar-item">Open Order</div>
+    <div class="ms-auto d-flex align-items-center gap-2 top-bar-items">
+        <!-- DOWNLOAD BUTTON -->
+        <button id="downloadBtn" class="btn btn-primary btn-sm d-flex align-items-center gap-1">
+            <i class="bi bi-download" style="color:white;"></i>
+        </button>
+
+        <div class="date-box">
+            <button class="icon-button">
+                <img src="{{ url_for('static', filename='images/calendar_icon.jpg') }}" class="icon-img">
+            </button>
+            <span id="dateText">--/--/----</span>
+        </div>
+
+        <div id="orderToggle" class="open-order top-bar-item">Open Order</div>
+    </div>
+</div>
+
+<!-- SEARCH & DATE/TIME FILTER ROW -->
+<div class="container-fluid mt-3">
+    <div class="row align-items-center">
+        <div class="col-3">
+            <input id="search_activity" type="search" class="form-control rounded-input" placeholder="Search...">
+        </div>
+        <div class="col-9 d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-1">
+                <span class="text-muted small">Date:</span>
+                <input type="date" class="form-control form-control-sm rounded-pill pill-input" id="date_start">
+                <input type="date" class="form-control form-control-sm rounded-pill pill-input" id="date_end">
+            </div>
+
+            <div class="d-flex align-items-center gap-1 ms-3">
+                <span class="text-muted small">Time:</span>
+                <input type="time" class="form-control form-control-sm rounded-pill pill-input" id="time_start">
+                <input type="time" class="form-control form-control-sm rounded-pill pill-input" id="time_end">
+            </div>
+
+            <div class="ms-auto d-flex gap-2">
+                <button class="btn btn-light btn-sm"><i class="bi bi-search"></i></button>
+                <button class="btn btn-light btn-sm"><i class="bi bi-funnel"></i></button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- MAIN ACTIVITY CONTENT -->
 <div id="activityMain">
-
-    <div class="container-fluid mt-3">
-        <div class="row align-items-center">
-            <div class="col-3">
-                <input id="search_activity" type="search"
-                       class="form-control rounded-input"
-                       placeholder="Search...">
-            </div>
-            <div class="col-9">
-                <input id="add_table_activity" type="text"
-                       class="form-control rounded-input"
-                       placeholder="Add Tables">
-            </div>
-        </div>
-    </div>
-
     <div class="container-fluid mt-3">
         <div class="row">
             <div class="col-3">
                 <div class="vertical-container">
                     <a href="{{ url_for('activity_billing_queue') }}">Billing Queue</a>
                     <a href="{{ url_for('activity_Tables') }}">Tables</a>
-                    <a href="{{ url_for('activity_Order_history') }}">Order History</a>
+                    <a href="{{ url_for('activity_Order_history') }}" class="active">Order History</a>
                 </div>
             </div>
             <div class="col-9">
-                <!-- right-side activity content -->
+                <div class="activity-display-screen">
+                    <p class="activity-display-text">Order history items will appear here…</p>
+                </div>
             </div>
         </div>
     </div>
-
 </div>
 
 <!-- SCRIPT -->
 <script>
-const orderToggle = document.getElementById('orderToggle');
-const sidebar = document.getElementById('sidebar');
-const orderContainer = document.getElementById('orderContainer');
-const menuToggle = document.getElementById('menuToggle');
-const activityMain = document.getElementById('activityMain');
-const topBarItems = document.querySelectorAll('.top-bar-item');
+    // DATE UPDATE
+    function updateDateTime() {
+        const now = new Date();
+        document.getElementById('dateText').textContent = now.toLocaleDateString();
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
 
-/* SHIFT FUNCTION */
-function shiftUI(shiftSidebar, shiftOrder) {
+    // ELEMENTS
+    const orderToggle = document.getElementById('orderToggle');
+    const sidebar = document.getElementById('sidebar');
+    const orderContainer = document.getElementById('orderContainer');
+    const menuToggle = document.getElementById('menuToggle');
+    const activityMain = document.getElementById('activityMain');
+    const topBarItems = document.querySelectorAll('.top-bar-items');
 
-    if (shiftSidebar) {
-        activityMain.classList.add('shifted-left');
-        topBarItems.forEach(el => el.classList.add('shifted-left-time'));
-    } else {
-        activityMain.classList.remove('shifted-left');
-        topBarItems.forEach(el => el.classList.remove('shifted-left-time'));
+    // SHIFT FUNCTION
+    function shiftUI(shiftSidebar, shiftOrder) {
+        if (shiftSidebar) {
+            activityMain.classList.add('shifted-left');
+            topBarItems.forEach(el => el.classList.add('shifted-left-time'));
+        } else {
+            activityMain.classList.remove('shifted-left');
+            topBarItems.forEach(el => el.classList.remove('shifted-left-time'));
+        }
+
+        if (shiftOrder) {
+            activityMain.classList.add('shifted-right');
+            topBarItems.forEach(el => el.classList.add('shifted-right-time'));
+        } else {
+            activityMain.classList.remove('shifted-right');
+            topBarItems.forEach(el => el.classList.remove('shifted-right-time'));
+        }
     }
 
-    if (shiftOrder) {
-        activityMain.classList.add('shifted-right');
-        topBarItems.forEach(el => el.classList.add('shifted-right-time'));
-    } else {
-        activityMain.classList.remove('shifted-right');
-        topBarItems.forEach(el => el.classList.remove('shifted-right-time'));
-    }
-}
-
-/* SIDEBAR TOGGLE */
-menuToggle.addEventListener('click', () => {
-    orderContainer.classList.remove("active");
-    orderToggle.textContent = "Open Order";
-    orderToggle.classList.remove("close-order");
-    orderToggle.classList.add("open-order");
-
-    sidebar.classList.toggle('active');
-    shiftUI(sidebar.classList.contains('active'), false);
-});
-
-/* ORDER TOGGLE (IDENTICAL BEHAVIOR TO DASHBOARD) */
-orderToggle.addEventListener('click', () => {
-
-    if (orderToggle.textContent === "Open Order") {
-        orderContainer.classList.add("active");
-        orderToggle.textContent = "Close Order";
-        orderToggle.classList.remove("open-order");
-        orderToggle.classList.add("close-order");
-
-        sidebar.classList.remove('active');
-        shiftUI(false, true);
-
-    } else {
+    // SIDEBAR TOGGLE
+    menuToggle.addEventListener('click', () => {
         orderContainer.classList.remove("active");
         orderToggle.textContent = "Open Order";
         orderToggle.classList.remove("close-order");
         orderToggle.classList.add("open-order");
 
-        shiftUI(false, false);
-    }
-});
-
-/* Clicking sidebar closes it */
-sidebar.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-    shiftUI(false, false);
-});
-
-/* DROPDOWNS */
-document.querySelectorAll('.dropdown-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const content = btn.nextElementSibling;
-        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        sidebar.classList.toggle('active');
+        shiftUI(sidebar.classList.contains('active'), false);
     });
-});
+
+    // ORDER TOGGLE
+    orderToggle.addEventListener('click', () => {
+        const isOpening = !orderContainer.classList.contains('active');
+
+        if (isOpening) {
+            orderContainer.classList.add("active");
+            orderToggle.textContent = "Close Order";
+            orderToggle.classList.remove("open-order");
+            orderToggle.classList.add("close-order");
+
+            sidebar.classList.remove('active');
+            shiftUI(false, true);
+        } else {
+            orderContainer.classList.remove("active");
+            orderToggle.textContent = "Open Order";
+            orderToggle.classList.remove("close-order");
+            orderToggle.classList.add("open-order");
+
+            shiftUI(false, false);
+        }
+    });
+
+    // CLICKING SIDEBAR CLOSES IT
+    sidebar.addEventListener('click', function () {
+        sidebar.classList.remove('active');
+        shiftUI(false, false);
+    });
+
+    // DROPDOWNS
+    document.querySelectorAll('.dropdown-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const content = btn.nextElementSibling;
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        });
+    });
 </script>
 
 </body>
