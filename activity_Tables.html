@@ -102,19 +102,51 @@
 
             <div class="col-9">
                 <div class="d-flex gap-3 mb-3">
-                    <button class="pill-btn">1st Floor</button>
-                    <button class="pill-btn">2nd Floor</button>
-                    <button class="pill-btn">3rd Floor</button>
+                    <button class="pill-btn" data-floor-btn="1st_floor">1st Floor</button>
+                    <button class="pill-btn" data-floor-btn="2nd_floor">2nd Floor</button>
+                    <button class="pill-btn" data-floor-btn="3rd_floor">3rd Floor</button>
+
+                    <button id="pencilToggle" class="btn btn-light btn-sm ms-auto">
+                         <img src="{{ url_for('static', filename='images\pencil_icon.jpg') }}" style="width:16px;">
+                    </button>
+
                 </div>
 
                 <div class="table-display">
-                    {% for table in tables %}
-                    <div class="table-card" data-table-id="{{ table.Table_db_id }}">
-                        <div class="table-number">Table {{ table.Table_number }}</div>
-                        <div class="table-capacity">Capacity: {{ table.table_capacity }}</div>
-                    </div>
+                    {% for floor in tables | map(attribute='table_floor') | unique %}
+                        <div class="floor-section" data-floor="{{ floor }}">
+                            <div class="floor-label">{{ floor.replace('_',' ').title() }}</div>
+                            <div class="floor-group">
+                                {% for table in tables if table.table_floor == floor %}
+                                <div class="table-card {% if table.table_status | lower | trim == 'reserved' %}reserved{% else %}available{% endif %}">
+                                    {{ table.Table_number }} 
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     {% endfor %}
+
                 </div>
+
+                <div class="table-status-legend">
+                        <span class="legend-title">Table Status</span>
+
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <span class="status-dot available"></span>
+                                <span>Available</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="status-dot served"></span>
+                                <span>Served</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="status-dot reserved"></span>
+                                <span>Reserved</span>
+                            </div>
+                        </div>
+                    </div>
+              </div>
             </div>
         </div>
     </div>
@@ -205,6 +237,19 @@
             alert("Selected table ID: " + card.dataset.tableId);
         });
     });
+
+        // FLOOR BUTTON TOGGLE
+    const floorButtons = document.querySelectorAll('.pill-btn');
+    floorButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const floor = btn.dataset.floorBtn; // e.g., '1st_floor'
+            const floorSection = document.querySelector(`.floor-section[data-floor="${floor}"]`);
+            if (floorSection) {
+                floorSection.classList.toggle('hidden-floor');
+            }
+        });
+    });
+
 </script>
 
 </body>

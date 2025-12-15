@@ -10,7 +10,7 @@ def get_connection():
     return mysql.connector.connect(
         host='localhost',
         user='root',
-        password='1234',
+        password='',
         database='bakery_busness'
     )
 
@@ -82,7 +82,7 @@ def login():
 
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM `User` WHERE user_name=%s AND user_password=%s", (username, password))
+    cursor.execute("SELECT * FROM `Users` WHERE user_name=%s AND user_password=%s", (username, password))
     user = cursor.fetchone()
     cursor.close()
     conn.close()
@@ -132,7 +132,6 @@ def activity_billing_queue():
 
     return render_template('activity_billing_queue.html',user=user_info)
 
-
 @app.route('/activity_Tables')
 def activity_Tables():
     if 'user_id' not in session:
@@ -146,7 +145,12 @@ def activity_Tables():
     
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM tables") 
+    cursor.execute("""
+        SELECT t.Table_db_id, t.Table_number, t.table_floor,
+               IFNULL(ts.table_status, 'available') AS table_status
+        FROM tables AS t
+        LEFT JOIN table_status AS ts ON t.Table_db_id = ts.Table_db_id
+    """)
     all_tables = cursor.fetchall()
     cursor.close()
     conn.close()
