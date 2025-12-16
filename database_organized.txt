@@ -474,6 +474,17 @@ Table_floor
 
 
 
+CREATE TABLE table_reservations (
+    table_reservation_number INT AUTO_INCREMENT PRIMARY KEY,
+    Table_db_id INT NOT NULL,
+    Date_reserved DATE NOT NULL,
+    number_of_people INT,
+    table_status ENUM('available', 'reserved', 'served') NOT NULL DEFAULT 'available',
+    CONSTRAINT fk_table_reservations_table
+        FOREIGN KEY (Table_db_id) REFERENCES tables(Table_db_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
 
 
 
@@ -481,30 +492,158 @@ Table_floor
 
 
 
+[order_table]
+"order_db_id": primary-key auto_increment
+"order_number": String 
+"Dateandtime_ordered":Datetime
+
+CREATE TABLE order_table (
+    order_db_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_number VARCHAR(50) NOT NULL,
+    Dateandtime_ordered DATETIME NOT NULL
+);
+
+
+************************************************************
+
+[order_types]
+"order_types_id":primary-key auto_increment
+"order_type": dine_in/takeaway
+
+CREATE TABLE order_types (
+    order_types_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_type ENUM('dine_in', 'takeaway') NOT NULL
+);
+
+
+************************************************************
+
+[customer_orders]
+"customer_order_id ": primary-key auto_increment
+"customer_name_order": name of person that made the order string
+"order_db_id" foriegn-key from order_table 
+"order_types_id": foriegn-key from order_types
+"good_number": foriegn-key from products of all the goods they purchased
+"order_table_location":{Table_db_id foriegn-key from tables
+"user_id":foriegn-key from table users
+
+CREATE TABLE customer_orders (
+    customer_order_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_name_order VARCHAR(255) NOT NULL,
+    order_db_id INT NOT NULL,
+    order_types_id INT NOT NULL,
+    good_number INT NOT NULL,
+    Table_db_id INT NOT NULL,
+    user_id INT NOT NULL,
+    FOREIGN KEY (order_db_id) REFERENCES order_table(order_db_id),
+    FOREIGN KEY (order_types_id) REFERENCES order_types(order_types_id),
+    FOREIGN KEY (good_number) REFERENCES products(good_number),
+    FOREIGN KEY (Table_db_id) REFERENCES tables(Table_db_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
 
 
 
 
 
+*****************************************************************************
+
+[order_payments]
+"order_payment_id ": primary-key auto_increment
+"customer_order_id" :foriegn-key from customer_orders 
+"total_number_of_items":string
+"order_total_price":string
+"order_payment_conpletion_status": paid/unpaid
+
+CREATE TABLE order_payments (
+    order_payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_order_id INT NOT NULL,
+    total_number_of_items VARCHAR(50) NOT NULL,
+    order_total_price VARCHAR(50) NOT NULL,
+    order_payment_completion_status ENUM('paid', 'unpaid') NOT NULL,
+
+    CONSTRAINT fk_order_payments_customer_order
+        FOREIGN KEY (customer_order_id)
+        REFERENCES customer_orders(customer_order_id)
+);
 
 
 
 
 
+*************************************************************************
+[Order_completion_status]
+"Order_completion_id ":primary-key auto_increment
+"customer_order_id" :foriegn-key from customer_orders 
+"order_completion_status": active/closed
+
+CREATE TABLE order_payments (
+    order_payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_order_id INT NOT NULL,
+    total_number_of_items VARCHAR(50) NOT NULL,
+    order_total_price VARCHAR(50) NOT NULL,
+    order_payment_completion_status ENUM('paid', 'unpaid') NOT NULL,
+
+    CONSTRAINT fk_order_payments_customer_order
+        FOREIGN KEY (customer_order_id)
+        REFERENCES customer_orders(customer_order_id)
+);
 
 
 
 
 
+*********************************************************************
+[order_payments_time_of_completion]
+"order_payments_time_id":primary-key auto_increment
+"order_payment_id ":foriegn-key from order_payments
+"Dateandtime_order_payments_completed" Date-time    this is when "order_payment_conpletion_status" of an order =paid
+
+CREATE TABLE order_payments_time_of_completion (
+    order_payments_time_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_payment_id INT NOT NULL,
+    Dateandtime_order_payments_completed DATETIME NOT NULL,
+
+    CONSTRAINT fk_payment_time_payment
+        FOREIGN KEY (order_payment_id)
+        REFERENCES order_payments(order_payment_id)
+);
 
 
+**********************************************************************
+
+[Order_completion_status_time_of_completion]
+
+"Order_completion_id ":primary-key auto_increment
+"order_payment_id ":foriegn-key from order_payments
+"Dateandtime_order_completion_completed" Date-time    this is when "Order_completion_status" of an order =paid
 
 
+CREATE TABLE order_completion_status_time_of_completion (
+    order_completion_time_id INT AUTO_INCREMENT PRIMARY KEY,
+    Order_completion_id INT NOT NULL,
+    Dateandtime_order_completion_completed DATETIME NOT NULL,
+
+    CONSTRAINT fk_completion_time_status
+        FOREIGN KEY (Order_completion_id)
+        REFERENCES order_completion_status(Order_completion_id)
+);
 
 
+********************************************************************************
 
+[order_completed_by_user]
+"order_completed_by_user": primary-key auto_increment
+"user_id":foriegn-key from table users
+""order_db_id":foriegn-key from table order_table 
 
-
+CREATE TABLE order_completed_by_user (
+    order_completed_by_user_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    order_db_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (order_db_id) REFERENCES order_table(order_db_id)
+);
 
 
 
