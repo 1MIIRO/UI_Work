@@ -12,7 +12,7 @@
 
 <body>
 
-<!-- SIDEBAR -->
+<!-- SIDEBAR (existing code) -->
 <div id="sidebar" class="sidebar">
     <div class="p-3">
         <h5>{{ user.personal_name }}</h5>
@@ -27,7 +27,7 @@
     </ul>
 </div>
 
-<!-- ORDER PANEL -->
+<!-- ORDER PANEL (existing code) -->
 <div id="orderContainer" class="order-container">
     <div class="order-top-bar">
         <button class="btn btn-light btn-sm">
@@ -55,7 +55,7 @@
     </div>
 </div>
 
-<!-- TOP BAR -->
+<!-- TOP BAR (existing code) -->
 <div class="top-bar d-flex align-items-center">
     <div id="menuToggle" class="menu-icon">&#9776;</div>
 
@@ -76,9 +76,8 @@
     </div>
 </div>
 
-<!-- MAIN ACTIVITY CONTENT -->
+<!-- ACTIVITY MAIN (existing code with minor floor filtering) -->
 <div id="activityMain">
-
     <div class="container-fluid mt-3">
         <div class="row align-items-center">
             <div class="col-3">
@@ -107,53 +106,97 @@
                     <button class="pill-btn" data-floor-btn="3rd_floor">3rd Floor</button>
 
                     <button id="pencilToggle" class="btn btn-light btn-sm ms-auto">
-                         <img src="{{ url_for('static', filename='images\pencil_icon.jpg') }}" style="width:16px;">
+                         <img src="{{ url_for('static', filename='images/pencil_icon.jpg') }}" style="width:16px;">
                     </button>
-
                 </div>
 
-                <div class="table-display">
-                    {% for floor in tables | map(attribute='table_floor') | unique %}
-                        <div class="floor-section" data-floor="{{ floor }}">
-                            <div class="floor-label">{{ floor.replace('_',' ').title() }}</div>
-                            <div class="floor-group">
-                                {% for table in tables if table.table_floor == floor %}
-                                <div class="table-card {% if table.table_status | lower | trim == 'reserved' %}reserved{% else %}available{% endif %}">
-                                    {{ table.Table_number }} 
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endfor %}
+                <!-- TABLE DISPLAY (existing code) -->
+                 <div class="table-display">
+					{% for floor in tables | map(attribute='table_floor') | unique if floor in ['2nd_floor', '3rd_floor'] %}
+						<div class="floor-section" data-floor="{{ floor }}">
+							<div class="floor-label">{{ floor.replace('_',' ').title() }}</div>
+							<div class="floor-group">
+								{% for table in tables if table.table_floor == floor %}
+									<div class="table-card {% if table.table_status | lower | trim == 'reserved' %}reserved{% elif table.table_status | lower | trim == 'served' %}served{% else %}available{% endif %}" 
+										data-table-id="{{ table.Table_db_id }}"
+										data-editable="false"
+                                        data-original-status="{{ table.table_status | lower | trim }}">
+										
 
-                </div>
+										<div class="table-pill">
+											{{ table.Table_number }}
+										</div>
 
+										{% if table.table_status | lower | trim == 'reserved' %}
+											<div class="reserved-info">
+												<div>{{ table.Date_reserved }}</div>
+												<div>{{ table.number_of_guests }}</div>
+											</div>
+										{% endif %}
+
+										{% if table.table_status | lower | trim == 'served' %}
+											<div class="served-info">
+												<div>{{ table.number_of_guests }}</div>
+												<div>{{ table.Table_number }}</div>
+											</div>
+										{% endif %}
+									</div>
+								{% endfor %}
+							</div>
+						</div>
+					{% endfor %}
+                 </div>
+
+                <!-- TABLE STATUS LEGEND (existing code) -->
                 <div class="table-status-legend">
-                        <span class="legend-title">Table Status</span>
-
-                        <div class="legend-items">
-                            <div class="legend-item">
-                                <span class="status-dot available"></span>
-                                <span>Available</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="status-dot served"></span>
-                                <span>Served</span>
-                            </div>
-                            <div class="legend-item">
-                                <span class="status-dot reserved"></span>
-                                <span>Reserved</span>
-                            </div>
+                    <span class="legend-title">Table Status</span>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="status-dot available"></span>
+                            <span>Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-dot served"></span>
+                            <span>Served</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-dot reserved"></span>
+                            <span>Reserved</span>
                         </div>
                     </div>
-              </div>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
 
-<!-- SCRIPT -->
+<!-- TABLE EDIT MODAL (added to allow editing and saving) -->
+<div id="tableModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+    <div class="modal-content" style="background:white; padding:20px; border-radius:10px; max-width:400px; width:90%;">
+        <h5>Edit Table</h5>
+        <label>Status:</label>
+        <select id="modalStatus">
+            <option value="available">Available</option>
+            <option value="reserved">Reserved</option>
+            <option value="served">Served</option>
+        </select>
+        <div id="reservedFields">
+            <label>Date Reserved:</label>
+            <input type="date" id="modalDateReserved">
+            <label>Number of Guests:</label>
+            <input type="number" id="modalNumberGuests" min="1">
+        </div>
+        <div id="servedFields">
+            <label>Number of Guests:</label>
+            <input type="number" id="modalServedGuests" min="1">
+        </div>
+        <button id="saveTableModalBtn">Save</button>
+    </div>
+</div>
+
 <script>
+    // === DATE/TIME UPDATE ===
     function updateDateTime() {
         const now = new Date();
         document.getElementById('dateText').textContent = now.toLocaleDateString();
@@ -161,6 +204,7 @@
     setInterval(updateDateTime, 1000);
     updateDateTime();
 
+    // === DOM ELEMENTS ===
     const orderToggle = document.getElementById('orderToggle');
     const sidebar = document.getElementById('sidebar');
     const orderContainer = document.getElementById('orderContainer');
@@ -168,6 +212,10 @@
     const activityMain = document.getElementById('activityMain');
     const topBarItems = document.querySelectorAll('.top-bar-items');
 
+    let editMode = false;            // for pencil toggle
+    let currentEditingCard = null;   // currently edited table card
+
+    // === SHIFT UI FUNCTION ===
     function shiftUI(shiftSidebar, shiftOrder) {
         if (shiftSidebar) {
             activityMain.classList.add('shifted-left');
@@ -186,7 +234,7 @@
         }
     }
 
-    // SIDEBAR TOGGLE
+    // === SIDEBAR TOGGLE ===
     menuToggle.addEventListener('click', () => {
         orderContainer.classList.remove("active");
         orderToggle.textContent = "Open Order";
@@ -197,7 +245,7 @@
         shiftUI(sidebar.classList.contains('active'), false);
     });
 
-    // ORDER TOGGLE
+    // === ORDER TOGGLE ===
     orderToggle.addEventListener('click', () => {
         if (orderToggle.textContent === "Open Order") {
             orderContainer.classList.add("active");
@@ -217,13 +265,12 @@
         }
     });
 
-    // Clicking sidebar closes it
-        sidebar.addEventListener('click', function () {
-            sidebar.classList.remove('active');
-            shiftUI(false, false);
-        });
+    sidebar.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        shiftUI(false, false);
+    });
 
-    // DROPDOWNS
+    // === DROPDOWN BUTTONS ===
     document.querySelectorAll('.dropdown-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const content = btn.nextElementSibling;
@@ -231,25 +278,124 @@
         });
     });
 
-    // TABLE CARD CLICK
-    document.querySelectorAll('.table-card').forEach(card => {
-        card.addEventListener('click', () => {
-            alert("Selected table ID: " + card.dataset.tableId);
+    // === FLOOR BUTTON TOGGLE ===
+    document.querySelectorAll('.pill-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const floor = btn.dataset.floorBtn;
+            const floorSection = document.querySelector(`.floor-section[data-floor="${floor}"]`);
+            if (floorSection) floorSection.classList.toggle('hidden-floor');
         });
     });
 
-        // FLOOR BUTTON TOGGLE
-    const floorButtons = document.querySelectorAll('.pill-btn');
-    floorButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const floor = btn.dataset.floorBtn; // e.g., '1st_floor'
-            const floorSection = document.querySelector(`.floor-section[data-floor="${floor}"]`);
-            if (floorSection) {
-                floorSection.classList.toggle('hidden-floor');
+    // === PENCIL TOGGLE (NEW) ===
+    const pencilToggle = document.getElementById('pencilToggle');
+    pencilToggle.addEventListener('click', () => {
+        editMode = !editMode;
+        document.querySelectorAll('.table-card').forEach(card => {
+            card.dataset.editable = editMode ? "true" : "false";
+        });
+
+        if (!editMode) saveTableChanges();  // Save changes when exiting edit mode
+    });
+
+    // === TABLE MODAL CLICK (NEW) ===
+    document.querySelector('.table-display').addEventListener('click', (e) => {
+        const card = e.target.closest('.table-card');
+        if (!card || card.dataset.editable !== "true") return;
+
+        currentEditingCard = card;
+
+        const tableStatus = card.classList.contains('available') ? 'available' :
+                            card.classList.contains('reserved') ? 'reserved' : 'served';
+        document.getElementById('modalStatus').value = tableStatus;
+
+        const reservedInfo = card.querySelector('.reserved-info');
+        document.getElementById('modalDateReserved').value = reservedInfo ? reservedInfo.querySelector('div:nth-child(1)').textContent : '';
+        document.getElementById('modalNumberGuests').value = reservedInfo ? reservedInfo.querySelector('div:nth-child(2)').textContent : '';
+
+        const servedInfo = card.querySelector('.served-info');
+        document.getElementById('modalServedGuests').value = servedInfo ? servedInfo.querySelector('div:nth-child(1)').textContent : '';
+
+        document.getElementById('tableModal').style.display = 'flex';
+    });
+
+    // === SAVE MODAL DATA (NEW) ===
+    document.getElementById('saveTableModalBtn').addEventListener('click', () => {
+        if (!currentEditingCard) return;
+
+        const newStatus = document.getElementById('modalStatus').value;
+
+        // Remove old info
+        currentEditingCard.querySelectorAll('.reserved-info, .served-info').forEach(el => el.remove());
+
+        // Update card class
+        currentEditingCard.classList.remove('available', 'reserved', 'served');
+        currentEditingCard.classList.add(newStatus);
+
+        if (newStatus === 'reserved') {
+            const div = document.createElement('div');
+            div.classList.add('reserved-info');
+            div.innerHTML = `<div>${document.getElementById('modalDateReserved').value}</div>
+                             <div>${document.getElementById('modalNumberGuests').value}</div>`;
+            currentEditingCard.appendChild(div);
+        }
+
+        if (newStatus === 'served') {
+            const div = document.createElement('div');
+            div.classList.add('served-info');
+            div.innerHTML = `<div>${document.getElementById('modalServedGuests').value}</div>
+                             <div>${currentEditingCard.querySelector('.table-pill').textContent}</div>`;
+            currentEditingCard.appendChild(div);
+        }
+
+        // Save changes to dataset
+        currentEditingCard.dataset.newStatus = newStatus;
+        currentEditingCard.dataset.dateReserved = document.getElementById('modalDateReserved').value || '';
+        currentEditingCard.dataset.numberOfGuests = document.getElementById('modalNumberGuests').value || '';
+
+        document.getElementById('tableModal').style.display = 'none';
+    });
+
+    // === SAVE TABLE CHANGES TO DATABASE (NEW) ===
+    function saveTableChanges() {
+        const changes = [];
+
+        document.querySelectorAll('.table-card').forEach(card => {
+            const newStatus = card.dataset.newStatus || card.dataset.originalStatus;
+            const originalStatus = card.dataset.originalStatus || 'available';
+
+            if (newStatus !== originalStatus) {
+                changes.push({
+                    table_id: card.dataset.tableId,
+                    status: newStatus,
+                    date_reserved: card.dataset.dateReserved || null,
+                    number_of_guests: card.dataset.numberOfGuests || null
+                });
             }
         });
-    });
 
+        if (changes.length > 0) {
+            fetch("{{ url_for('update_tables') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ changes: changes })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log("Saved:", data);
+
+                document.querySelectorAll('.table-card').forEach(card => {
+                    if(card.dataset.newStatus){
+                        card.dataset.originalStatus = card.dataset.newStatus;
+                        delete card.dataset.newStatus;
+                        delete card.dataset.dateReserved;
+                        delete card.dataset.numberOfGuests;
+                    }
+                });
+            })
+            .catch(err => console.error(err));
+        }
+    }
 </script>
 
 </body>

@@ -1,0 +1,862 @@
+
+Use bakery_busness;
+
+products
+
+		CREATE TABLE products (
+			good_number INT AUTO_INCREMENT PRIMARY KEY,
+			good_name VARCHAR(255) NOT NULL,
+			price DECIMAL(10,2) NOT NULL,
+			image_path VARCHAR(500),
+			description TEXT
+		);
+
+		+-------------+---------------+------+-----+---------+----------------+
+		| Field       | Type          | Null | Key | Default | Extra          |
+		+-------------+---------------+------+-----+---------+----------------+
+		| good_number | int           | NO   | PRI | NULL    | auto_increment |
+		| good_name   | varchar(255)  | NO   |     | NULL    |                |
+		| price       | decimal(10,2) | NO   |     | NULL    |                |
+		| image_path  | varchar(500)  | YES  |     | NULL    |                |
+		| description | text          | YES  |     | NULL    |                |
+		+-------------+---------------+------+-----+---------+----------------+
+
+
+			+-------------+-----------------------+-------+------------------------------------------------------+--------------------------------------------------------------------------------------------------------+
+			| good_number | good_name             | price | image_path                                           | description                                                                                            |
+			+-------------+-----------------------+-------+------------------------------------------------------+--------------------------------------------------------------------------------------------------------+
+			|           1 | banana_cake           |  6.00 | static/food_menu_images/banana_cake_image.jpg        | Moist and sweet banana loaf, lightly spiced, perfect for breakfast or a snack.                         |
+			|           2 | blackforest_cake      |  6.00 | static/food_menu_images/blackforest_cake_image.jpg   | A rich chocolate cake layered with cherries and whipped cream.                                         |
+			|           3 | cake_bread            |  3.00 | static/food_menu_images/cake_bread_pic.jpg           | A soft and slightly sweet bread, perfect for breakfast or snacks.                                      |
+			|           4 | cheese_cake           |  5.00 | static/food_menu_images/cheese_cake_image.jpg        | A rich and creamy dessert with a smooth cheese filling on a buttery crust.                             |
+			|           5 | chiffon_cake          |  6.00 | static/food_menu_images/chiffon_cake_image.jpg       | A light and airy cake made with vegetable oil and whipped egg whites.                                  |
+			|           6 | butter_cake           |  4.00 | static/food_menu_images/butter_cake_inmage.jpg       | A soft, buttery cake with a golden crust and tender crumb.                                             |
+			|           7 | choclate_mouse        |  6.00 | static/food_menu_images/chocolate_moos_image.jpg     | A creamy, fluffy chocolate dessert with a smooth texture.                                              |
+			|           8 | choclate_cake         |  6.00 | static/food_menu_images/chocolate_cake_image.jpg     | A moist and rich chocolate cake perfect for any chocolate lover.                                       |
+			|           9 | cream_cupcake         |  4.00 | static/food_menu_images/cream_cupcake_image.jpg      | A soft cupcake topped with sweet, creamy frosting.                                                     |
+			|          10 | french_bread          |  3.00 | static/food_menu_images/french_bread_pic.jpg         | A classic French bread with a crisp crust and soft, airy interior.                                     |
+			|          11 | italian_bread         |  4.00 | static/food_menu_images/italian_bread_pic.jpg        | A soft and flavorful Italian bread, perfect for sandwiches or toasting.                                |
+			|          12 | lemon_cake            |  6.00 | static/food_menu_images/lemon_cake_image.jpg         | A zesty, moist cake with a fresh lemon flavor.                                                         |
+			|          13 | poundcake             |  5.00 | static/food_menu_images/poundcake_image.jpg          | A dense, buttery cake with a rich, classic flavor.                                                     |
+			|          14 | sliced_bread          |  3.00 | static/food_menu_images/sliced_bread_pic.jpg         | A soft and freshly sliced bread, perfect for sandwiches or toast.                                      |
+			|          15 | soughdough_bread      |  4.00 | static/food_menu_images/soughdough_bread_pic.jpg     | A tangy and crusty sourdough bread, perfect for sandwiches or toasting.                                |
+			|          16 | sponge_cake           |  5.00 | static/food_menu_images/sponge_cake_image.jpg        | A light and airy sponge cake, perfect for layering or enjoying as is.                                  |
+			|          17 | strawberry_mouse      |  5.00 | static/food_menu_images/strawberry_mouse_image.jpg   | A smooth and airy dessert flavored with fresh strawberries.                                            |
+			|          18 | tiramisu_cake         |  6.00 | static/food_menu_images/tiramisu_cake_image.jpg      | An Italian-inspired cake with coffee-soaked layers and creamy mascarpone.                              |
+			|          19 | yeast_donut           |  6.00 | static/food_menu_images/yeast_donut_image.jpg        | Generated description here                                                                             |
+			|          20 | jelly_doughnut        |  6.00 | static/food_menu_images/jelly_doughnut_image.jpg     | A soft doughnut filled with sweet jelly and coated with sugar.                                         |
+			|          21 | glazed_doughnut       |  5.00 | static/food_menu_images/glazed_donut_image.jpg       | A classic glazed doughnut with a sweet sugar coating, soft and fluffy.                                 |
+			|          22 | Cruller_Doughnut      |  6.00 | static/food_menu_images/cruller_donut_image.jpg      | A light, twisted doughnut with a slightly crisp exterior and soft interior, perfect for a sweet snack. |
+			|          23 | Churro                |  5.00 | static/food_menu_images/churro_image.jpg             | A crunchy, cinnamon-sugar coated doughnut-style treat, perfect for dipping in chocolate or caramel.    |
+			|          24 | Chocolate Doughnut    |  6.00 | static/food_menu_images/choclate_doughnut_image.jpg  | A rich chocolate-glazed doughnut, soft and fluffy inside, perfect for chocolate lovers.                |
+			|          25 | Boston Cream Doughnut |  7.00 | static/food_menu_images/boston_cream_donut_image.jpg | A classic Boston Cream Doughnut filled with creamy custard and topped with a chocolate glaze.          |
+			+-------------+-----------------------+-------+------------------------------------------------------+--------------------------------------------------------------------------------------------------------+
+			
+			INSERT INTO products (good_name, price, image_path, description) VALUES
+			('banana_cake', 6.00, 'static/food_menu_images/banana_cake_image.jpg',
+			 'Moist and sweet banana loaf, lightly spiced, perfect for breakfast or a snack.'),
+
+			('blackforest_cake', 6.00, 'static/food_menu_images/blackforest_cake_image.jpg',
+			 'A rich chocolate cake layered with cherries and whipped cream.'),
+
+			('cake_bread', 3.00, 'static/food_menu_images/cake_bread_pic.jpg',
+			 'A soft and slightly sweet bread, perfect for breakfast or snacks.'),
+
+			('cheese_cake', 5.00, 'static/food_menu_images/cheese_cake_image.jpg',
+			 'A rich and creamy dessert with a smooth cheese filling on a buttery crust.'),
+
+			('chiffon_cake', 6.00, 'static/food_menu_images/chiffon_cake_image.jpg',
+			 'A light and airy cake made with vegetable oil and whipped egg whites.'),
+
+			('butter_cake', 4.00, 'static/food_menu_images/butter_cake_inmage.jpg',
+			 'A soft, buttery cake with a golden crust and tender crumb.'),
+
+			('choclate_mouse', 6.00, 'static/food_menu_images/chocolate_moos_image.jpg',
+			 'A creamy, fluffy chocolate dessert with a smooth texture.'),
+
+			('choclate_cake', 6.00, 'static/food_menu_images/chocolate_cake_image.jpg',
+			 'A moist and rich chocolate cake perfect for any chocolate lover.'),
+
+			('cream_cupcake', 4.00, 'static/food_menu_images/cream_cupcake_image.jpg',
+			 'A soft cupcake topped with sweet, creamy frosting.'),
+
+			('french_bread', 3.00, 'static/food_menu_images/french_bread_pic.jpg',
+			 'A classic French bread with a crisp crust and soft, airy interior.'),
+
+			('italian_bread', 4.00, 'static/food_menu_images/italian_bread_pic.jpg',
+			 'A soft and flavorful Italian bread, perfect for sandwiches or toasting.'),
+
+			('lemon_cake', 6.00, 'static/food_menu_images/lemon_cake_image.jpg',
+			 'A zesty, moist cake with a fresh lemon flavor.'),
+
+			('poundcake', 5.00, 'static/food_menu_images/poundcake_image.jpg',
+			 'A dense, buttery cake with a rich, classic flavor.'),
+
+			('sliced_bread', 3.00, 'static/food_menu_images/sliced_bread_pic.jpg',
+			 'A soft and freshly sliced bread, perfect for sandwiches or toast.'),
+
+			('soughdough_bread', 4.00, 'static/food_menu_images/soughdough_bread_pic.jpg',
+			 'A tangy and crusty sourdough bread, perfect for sandwiches or toasting.'),
+
+			('sponge_cake', 5.00, 'static/food_menu_images/sponge_cake_image.jpg',
+			 'A light and airy sponge cake, perfect for layering or enjoying as is.'),
+
+			('strawberry_mouse', 5.00, 'static/food_menu_images/strawberry_mouse_image.jpg',
+			 'A smooth and airy dessert flavored with fresh strawberries.'),
+
+			('tiramisu_cake', 6.00, 'static/food_menu_images/tiramisu_cake_image.jpg',
+			 'An Italian-inspired cake with coffee-soaked layers and creamy mascarpone.'),
+
+			('yeast_donut', 6.00, 'static/food_menu_images/yeast_donut_image.jpg',
+			 'Generated description here'),
+
+			('jelly_doughnut', 6.00, 'static/food_menu_images/jelly_doughnut_image.jpg',
+			 'A soft doughnut filled with sweet jelly and coated with sugar.'),
+
+			('glazed_doughnut', 5.00, 'static/food_menu_images/glazed_donut_image.jpg',
+			 'A classic glazed doughnut with a sweet sugar coating, soft and fluffy.'),
+
+			('Cruller_Doughnut', 6.00, 'static/food_menu_images/cruller_donut_image.jpg',
+			 'A light, twisted doughnut with a slightly crisp exterior and soft interior, perfect for a sweet snack.'),
+
+			('Churro', 5.00, 'static/food_menu_images/churro_image.jpg',
+			 'A crunchy, cinnamon-sugar coated doughnut-style treat, perfect for dipping in chocolate or caramel.'),
+
+			('Chocolate Doughnut', 6.00, 'static/food_menu_images/choclate_doughnut_image.jpg',
+			 'A rich chocolate-glazed doughnut, soft and fluffy inside, perfect for chocolate lovers.'),
+
+			('Boston Cream Doughnut', 7.00, 'static/food_menu_images/boston_cream_donut_image.jpg',
+			 'A classic Boston Cream Doughnut filled with creamy custard and topped with a chocolate glaze.');
+
+
+
+products_type
+
+		DESCRIBE products_type;
+
+
+		 CREATE TABLE products_type (
+				 good_type_number INT AUTO_INCREMENT PRIMARY KEY,
+				 good_number INT,
+				 good_type TEXT,
+				 CONSTRAINT fk_table_products
+					 FOREIGN KEY (good_number)
+					 REFERENCES products(good_number)
+			 );
+
+		+------------------+------+------+-----+---------+----------------+
+		| Field            | Type | Null | Key | Default | Extra          |
+		+------------------+------+------+-----+---------+----------------+
+		| good_type_number | int  | NO   | PRI | NULL    | auto_increment |
+		| good_number      | int  | YES  | MUL | NULL    |                |
+		| good_type        | text | YES  |     | NULL    |                |
+		+------------------+------+------+-----+---------+----------------+
+
+
+		INSERT INTO products_type (good_number, good_type) VALUES
+		(1,  'cake'),
+		(2,  'cake'),
+		(3,  'bread'),
+		(4,  'cake'),
+		(5,  'cake'),
+		(6,  'cake'),
+		(7, 'cake'),
+		(8, 'cake'),
+		(9, 'cake'),
+		(10, 'bread'),
+		(11, 'bread'),
+		(12, 'cake'),
+		(13, 'cake'),
+		(14, 'bread'),
+		(15, 'bread'),
+		(16, 'bread'),
+		(17, 'bread'),
+		(18, 'bread'),
+		(19, 'doughnut'),
+		(20, 'doughnut'),
+		(21, 'doughnut'),
+		(22, 'doughnut'),
+		(23, 'doughnut'),
+		(24, 'doughnut'),
+		(25, 'doughnut');
+
+		Select * from products_type;
+
+		+------------------+-------------+-----------+
+		| good_type_number | good_number | good_type |
+		+------------------+-------------+-----------+
+		|                1 |           1 | cake      |
+		|                2 |           2 | cake      |
+		|                3 |           3 | bread     |
+		|                4 |           4 | cake      |
+		|                5 |           5 | cake      |
+		|                6 |           6 | cake      |
+		|                7 |           7 | cake      |
+		|                8 |           8 | cake      |
+		|                9 |           9 | cake      |
+		|               10 |          10 | bread     |
+		|               11 |          11 | bread     |
+		|               12 |          12 | cake      |
+		|               13 |          13 | cake      |
+		|               14 |          14 | bread     |
+		|               15 |          15 | bread     |
+		|               16 |          16 | bread     |
+		|               17 |          17 | bread     |
+		|               18 |          18 | bread     |
+		|               19 |          19 | doughnut  |
+		|               20 |          20 | doughnut  |
+		|               21 |          21 | doughnut  |
+		|               22 |          22 | doughnut  |
+		|               23 |          23 | doughnut  |
+		|               24 |          24 | doughnut  |
+		|               25 |          25 | doughnut  |
+		+------------------+-------------+-----------+
+		25 rows in set (0.00 sec)
+
+tables
+
+
+					CREATE TABLE tables (
+							Table_db_id INT AUTO_INCREMENT PRIMARY KEY,
+							Table_number VARCHAR(50) NOT NULL UNIQUE,
+							table_capacity VARCHAR(50)
+						 );
+
+					+----------------+-------------+------+-----+---------+----------------+
+					| Field          | Type        | Null | Key | Default | Extra          |
+					+----------------+-------------+------+-----+---------+----------------+
+					| Table_db_id    | int         | NO   | PRI | NULL    | auto_increment |
+					| Table_number   | varchar(50) | NO   | UNI | NULL    |                |
+					| table_capacity | varchar(50) | YES  |     | NULL    |                |
+					+----------------+-------------+------+-----+---------+----------------+
+
+					INSERT INTO tables (Table_number, table_capacity) VALUES
+					('T-01', '2 persons'),
+					('T-02', '2 persons'),
+					('T-03', '4 persons'),
+					('T-04', '4 persons'),
+					('T-05', '6 persons'),
+					('T-06', '6 persons'),
+					('T-07', '12 persons'),
+					('T-08', '12 persons'),
+					('T-09', '2 persons'),
+					('T-10', '4 persons'),
+					('T-11', '6 persons'),
+					('T-12', '12 persons'),
+					('T-13', '2 persons'),
+					('T-14', '2 persons'),
+					('T-15', '4 persons'),
+					('T-16', '4 persons'),
+					('T-17', '6 persons'),
+					('T-18', '6 persons'),
+					('T-19', '12 persons'),
+					('T-20', '12 persons'),
+					('T-21', '2 persons'),
+					('T-22', '4 persons'),
+					('T-23', '6 persons'),
+					('T-24', '12 persons'),
+					('T-25', '2 persons'),
+					('T-26', '2 persons'),
+					('T-27', '4 persons'),
+					('T-28', '4 persons'),
+					('T-29', '6 persons'),
+					('T-30', '6 persons'),
+					('T-31', '12 persons'),
+					('T-32', '12 persons'),
+					('T-33', '2 persons'),
+					('T-34', '4 persons'),
+					('T-35', '6 persons'),
+					('T-36', '12 persons'),
+					('T-37', '2 persons'),
+					('T-38', '4 persons'),
+					('T-39', '6 persons'),
+					('T-40', '12 persons'),
+					('T-41', '2 persons'),
+					('T-42', '4 persons'),
+					('T-43', '6 persons'),
+					('T-44', '12 persons'),
+					('T-45', '2 persons'),
+					('T-46', '4 persons'),
+					('T-47', '6 persons'),
+					('T-48', '12 persons'),
+					('T-49', '2 persons'),
+					('T-50', '4 persons');
+
+
+					+-------------+--------------+----------------+
+					| Table_db_id | Table_number | table_capacity |
+					+-------------+--------------+----------------+
+					|           1 | T-01         | 2 persons      |
+					|           2 | T-02         | 2 persons      |
+					|           3 | T-03         | 4 persons      |
+					|           4 | T-04         | 4 persons      |
+					|           5 | T-05         | 6 persons      |
+					|           6 | T-06         | 6 persons      |
+					|           7 | T-07         | 12 persons     |
+					|           8 | T-08         | 12 persons     |
+					|           9 | T-09         | 2 persons      |
+					|          10 | T-10         | 4 persons      |
+					|          11 | T-11         | 6 persons      |
+					|          12 | T-12         | 12 persons     |
+					|          13 | T-13         | 2 persons      |
+					|          14 | T-14         | 2 persons      |
+					|          15 | T-15         | 4 persons      |
+					|          16 | T-16         | 4 persons      |
+					|          17 | T-17         | 6 persons      |
+					|          18 | T-18         | 6 persons      |
+					|          19 | T-19         | 12 persons     |
+					|          20 | T-20         | 12 persons     |
+					|          21 | T-21         | 2 persons      |
+					|          22 | T-22         | 4 persons      |
+					|          23 | T-23         | 6 persons      |
+					|          24 | T-24         | 12 persons     |
+					|          25 | T-25         | 2 persons      |
+					|          26 | T-26         | 2 persons      |
+					|          27 | T-27         | 4 persons      |
+					|          28 | T-28         | 4 persons      |
+					|          29 | T-29         | 6 persons      |
+					|          30 | T-30         | 6 persons      |
+					|          31 | T-31         | 12 persons     |
+					|          32 | T-32         | 12 persons     |
+					|          33 | T-33         | 2 persons      |
+					|          34 | T-34         | 4 persons      |
+					|          35 | T-35         | 6 persons      |
+					|          36 | T-36         | 12 persons     |
+					|          37 | T-37         | 2 persons      |
+					|          38 | T-38         | 4 persons      |
+					|          39 | T-39         | 6 persons      |
+					|          40 | T-40         | 12 persons     |
+					|          41 | T-41         | 2 persons      |
+					|          42 | T-42         | 4 persons      |
+					|          43 | T-43         | 6 persons      |
+					|          44 | T-44         | 12 persons     |
+					|          45 | T-45         | 2 persons      |
+					|          46 | T-46         | 4 persons      |
+					|          47 | T-47         | 6 persons      |
+					|          48 | T-48         | 12 persons     |
+					|          49 | T-49         | 2 persons      |
+					|          50 | T-50         | 4 persons      |
+					+-------------+--------------+----------------+
+
+
+Table_floor
+
+				CREATE TABLE table_floor (
+					t_floor_id INT AUTO_INCREMENT PRIMARY KEY,
+					Table_db_id INT NOT NULL,
+					floor_name TEXT,
+					CONSTRAINT fk_table_floor
+						FOREIGN KEY (Table_db_id) REFERENCES tables(Table_db_id)
+						ON DELETE CASCADE
+						ON UPDATE CASCADE
+				);
+
+
+				+-------------+------+------+-----+---------+----------------+
+				| Field       | Type | Null | Key | Default | Extra          |
+				+-------------+------+------+-----+---------+----------------+
+				| t_floor_id  | int  | NO   | PRI | NULL    | auto_increment |
+				| Table_db_id | int  | NO   | MUL | NULL    |                |
+				| floor_name  | text | YES  |     | NULL    |                |
+				+-------------+------+------+-----+---------+----------------+
+
+
+
+				INSERT INTO table_floor (Table_db_id, floor_name) VALUES
+				(1, '3rd_floor'),
+				(2, '3rd_floor'),
+				(3, '3rd_floor'),
+				(4, '3rd_floor'),
+				(5, '3rd_floor'),
+				(6, '3rd_floor'),
+				(7, '3rd_floor'),
+				(8, '3rd_floor'),
+				(9, '3rd_floor'),
+				(10, '3rd_floor'),
+				(11, '3rd_floor'),
+				(12, '3rd_floor'),
+				(13, '2nd_floor'),
+				(14, '2nd_floor'),
+				(15, '2nd_floor'),
+				(16, '2nd_floor'),
+				(17, '2nd_floor'),
+				(18, '2nd_floor'),
+				(19, '2nd_floor'),
+				(20, '2nd_floor'),
+				(21, '2nd_floor'),
+				(22, '2nd_floor'),
+				(23, '2nd_floor'),
+				(24, '2nd_floor'),
+				(25, '1st_floor'),
+				(26, '1st_floor'),
+				(27, '1st_floor'),
+				(28, '1st_floor'),
+				(29, '1st_floor'),
+				(30, '1st_floor'),
+				(31, '1st_floor'),
+				(32, '1st_floor'),
+				(33, '1st_floor'),
+				(34, '1st_floor'),
+				(35, '1st_floor'),
+				(36, '1st_floor'),
+				(37, '3rd_floor'),
+				(38, '3rd_floor'),
+				(39, '3rd_floor'),
+				(40, '3rd_floor'),
+				(41, '2nd_floor'),
+				(42, '2nd_floor'),
+				(43, '2nd_floor'),
+				(44, '2nd_floor'),
+				(45, '1st_floor'),
+				(46, '1st_floor'),
+				(47, '1st_floor'),
+				(48, '1st_floor'),
+				(49, '3rd_floor'),
+				(50, '2nd_floor');
+
+
+
+				+------------+-------------+------------+
+				| t_floor_id | Table_db_id | floor_name |
+				+------------+-------------+------------+
+				|          1 |           1 | 3rd_floor  |
+				|          2 |           2 | 3rd_floor  |
+				|          3 |           3 | 3rd_floor  |
+				|          4 |           4 | 3rd_floor  |
+				|          5 |           5 | 3rd_floor  |
+				|          6 |           6 | 3rd_floor  |
+				|          7 |           7 | 3rd_floor  |
+				|          8 |           8 | 3rd_floor  |
+				|          9 |           9 | 3rd_floor  |
+				|         10 |          10 | 3rd_floor  |
+				|         11 |          11 | 3rd_floor  |
+				|         12 |          12 | 3rd_floor  |
+				|         13 |          13 | 2nd_floor  |
+				|         14 |          14 | 2nd_floor  |
+				|         15 |          15 | 2nd_floor  |
+				|         16 |          16 | 2nd_floor  |
+				|         17 |          17 | 2nd_floor  |
+				|         18 |          18 | 2nd_floor  |
+				|         19 |          19 | 2nd_floor  |
+				|         20 |          20 | 2nd_floor  |
+				|         21 |          21 | 2nd_floor  |
+				|         22 |          22 | 2nd_floor  |
+				|         23 |          23 | 2nd_floor  |
+				|         24 |          24 | 2nd_floor  |
+				|         25 |          25 | 1st_floor  |
+				|         26 |          26 | 1st_floor  |
+				|         27 |          27 | 1st_floor  |
+				|         28 |          28 | 1st_floor  |
+				|         29 |          29 | 1st_floor  |
+				|         30 |          30 | 1st_floor  |
+				|         31 |          31 | 1st_floor  |
+				|         32 |          32 | 1st_floor  |
+				|         33 |          33 | 1st_floor  |
+				|         34 |          34 | 1st_floor  |
+				|         35 |          35 | 1st_floor  |
+				|         36 |          36 | 1st_floor  |
+				|         37 |          37 | 3rd_floor  |
+				|         38 |          38 | 3rd_floor  |
+				|         39 |          39 | 3rd_floor  |
+				|         40 |          40 | 3rd_floor  |
+				|         41 |          41 | 2nd_floor  |
+				|         42 |          42 | 2nd_floor  |
+				|         43 |          43 | 2nd_floor  |
+				|         44 |          44 | 2nd_floor  |
+				|         45 |          45 | 1st_floor  |
+				|         46 |          46 | 1st_floor  |
+				|         47 |          47 | 1st_floor  |
+				|         48 |          48 | 1st_floor  |
+				|         49 |          49 | 3rd_floor  |
+				|         50 |          50 | 2nd_floor  |
+				+------------+-------------+------------+
+				50 rows in set (0.00 sec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
