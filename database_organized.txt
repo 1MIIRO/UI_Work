@@ -473,177 +473,294 @@ Table_floor
 				50 rows in set (0.00 sec)
 
 
+table_reservations
+		CREATE TABLE table_reservations (
+			table_reservation_number INT AUTO_INCREMENT PRIMARY KEY,
+			Table_db_id INT NOT NULL,
+			user_id INT NOT NULL,
+			Date_reserved DATE NOT NULL,
+			number_of_people INT,
+			table_status ENUM('available', 'reserved', 'served') 
+				NOT NULL DEFAULT 'available',
 
-CREATE TABLE table_reservations (
-    table_reservation_number INT AUTO_INCREMENT PRIMARY KEY,
-    Table_db_id INT NOT NULL,
-    Date_reserved DATE NOT NULL,
-    number_of_people INT,
-    table_status ENUM('available', 'reserved', 'served') NOT NULL DEFAULT 'available',
-    CONSTRAINT fk_table_reservations_table
-        FOREIGN KEY (Table_db_id) REFERENCES tables(Table_db_id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-);
+			CONSTRAINT fk_table_reservations_table
+				FOREIGN KEY (Table_db_id)
+				REFERENCES tables(Table_db_id)
+				ON DELETE CASCADE
+				ON UPDATE CASCADE,
+
+			CONSTRAINT fk_table_reservations_user
+				FOREIGN KEY (user_id)
+				REFERENCES user(user_id)
+				ON DELETE CASCADE
+				ON UPDATE CASCADE
+		);
+
+
+		+--------------------------+---------------------------------------+------+-----+-----------+----------------+
+		| Field                    | Type                                  | Null | Key | Default   | Extra          |
+		+--------------------------+---------------------------------------+------+-----+-----------+----------------+
+		| table_reservation_number | int                                   | NO   | PRI | NULL      | auto_increment |
+		| Table_db_id              | int                                   | NO   | MUL | NULL      |                |
+		| user_id                  | int                                   | NO   | MUL | NULL      |                |
+		| Date_reserved            | date                                  | NO   |     | NULL      |                |
+		| number_of_people         | int                                   | YES  |     | NULL      |                |
+		| table_status             | enum('available','reserved','served') | NO   |     | available |                |
+		+--------------------------+---------------------------------------+------+-----+-----------+----------------+
 
 
 
 
 
+order_table
 
+		"order_db_id": primary-key auto_increment
+		"order_number": String 
+		"Dateandtime_ordered":Datetime
 
-[order_table]
-"order_db_id": primary-key auto_increment
-"order_number": String 
-"Dateandtime_ordered":Datetime
+		CREATE TABLE order_table (
+			order_db_id INT AUTO_INCREMENT PRIMARY KEY,
+			order_number VARCHAR(50) NOT NULL,
+			Dateandtime_ordered DATETIME NOT NULL
+		);
 
-CREATE TABLE order_table (
-    order_db_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_number VARCHAR(50) NOT NULL,
-    Dateandtime_ordered DATETIME NOT NULL
-);
+		+---------------------+-------------+------+-----+---------+----------------+
+		| Field               | Type        | Null | Key | Default | Extra          |
+		+---------------------+-------------+------+-----+---------+----------------+
+		| order_db_id         | int         | NO   | PRI | NULL    | auto_increment |
+		| order_number        | varchar(50) | NO   |     | NULL    |                |
+		| Dateandtime_ordered | datetime    | NO   |     | NULL    |                |
+		+---------------------+-------------+------+-----+---------+----------------+
+		3 rows in set (0.00 sec
+
+************************************************************
+
+order_types
+
+			CREATE TABLE order_types (
+				order_types_id INT AUTO_INCREMENT PRIMARY KEY,
+				order_db_id INT NOT NULL,
+				order_type ENUM('dine_in', 'takeaway') NOT NULL,
+
+				CONSTRAINT fk_order_types_order
+					FOREIGN KEY (order_db_id)
+					REFERENCES order_table(order_db_id)
+					ON DELETE CASCADE
+					ON UPDATE CASCADE
+			);
+
+			+----------------+----------------------------+------+-----+---------+----------------+
+			| Field          | Type                       | Null | Key | Default | Extra          |
+			+----------------+----------------------------+------+-----+---------+----------------+
+			| order_types_id | int                        | NO   | PRI | NULL    | auto_increment |
+			| order_db_id    | int                        | NO   | MUL | NULL    |                |
+			| order_type     | enum('dine_in','takeaway') | NO   |     | NULL    |                |
+			+----------------+----------------------------+------+-----+---------+----------------+
+			3 rows in set (0.00 sec)
 
 
 ************************************************************
 
-[order_types]
-"order_types_id":primary-key auto_increment
-"order_type": dine_in/takeaway
+customer_orders_verification
 
-CREATE TABLE order_types (
-    order_types_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_type ENUM('dine_in', 'takeaway') NOT NULL
-);
+		CREATE TABLE customer_orders_verification (
+			customer_order_id INT AUTO_INCREMENT PRIMARY KEY,
+			customer_name_order VARCHAR(100) NOT NULL,
+			order_db_id INT NOT NULL,
+			user_id INT NOT NULL,
+			order_table_location INT NULL,
 
+			CONSTRAINT fk_customer_orders_order
+				FOREIGN KEY (order_db_id)
+				REFERENCES order_table(order_db_id)
+				ON DELETE CASCADE
+				ON UPDATE CASCADE,
 
-************************************************************
+			CONSTRAINT fk_customer_orders_user
+				FOREIGN KEY (user_id)
+				REFERENCES user(user_id)
+				ON DELETE CASCADE
+				ON UPDATE CASCADE,
 
-[customer_orders]
-"customer_order_id ": primary-key auto_increment
-"customer_name_order": name of person that made the order string
-"order_db_id" foriegn-key from order_table 
-"order_types_id": foriegn-key from order_types
-"good_number": foriegn-key from products of all the goods they purchased
-"order_table_location":{Table_db_id foriegn-key from tables
-"user_id":foriegn-key from table users
+			CONSTRAINT fk_customer_orders_table_location
+				FOREIGN KEY (order_table_location)
+				REFERENCES tables(Table_db_id)
+				ON DELETE SET NULL
+				ON UPDATE CASCADE
+		);
 
-CREATE TABLE customer_orders (
-    customer_order_id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_name_order VARCHAR(255) NOT NULL,
-    order_db_id INT NOT NULL,
-    order_types_id INT NOT NULL,
-    good_number INT NOT NULL,
-    Table_db_id INT NOT NULL,
-    user_id INT NOT NULL,
-    FOREIGN KEY (order_db_id) REFERENCES order_table(order_db_id),
-    FOREIGN KEY (order_types_id) REFERENCES order_types(order_types_id),
-    FOREIGN KEY (good_number) REFERENCES products(good_number),
-    FOREIGN KEY (Table_db_id) REFERENCES tables(Table_db_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
+		+----------------------+--------------+------+-----+---------+----------------+
+		| Field                | Type         | Null | Key | Default | Extra          |
+		+----------------------+--------------+------+-----+---------+----------------+
+		| customer_order_id    | int          | NO   | PRI | NULL    | auto_increment |
+		| customer_name_order  | varchar(100) | NO   |     | NULL    |                |
+		| order_db_id          | int          | NO   | MUL | NULL    |                |
+		| user_id              | int          | NO   | MUL | NULL    |                |
+		| order_table_location | int          | YES  | MUL | NULL    |                |
+		+----------------------+--------------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
 
+****************************************************************************************
+customer_goods_purchased
 
+			+-----------------------------+------+------+-----+---------+----------------+
+			| Field                       | Type | Null | Key | Default | Extra          |
+			+-----------------------------+------+------+-----+---------+----------------+
+			| customer_goods_purchased_id | int  | NO   | PRI | NULL    | auto_increment |
+			| customer_order_id           | int  | NO   | MUL | NULL    |                |
+			| good_number                 | int  | NO   | MUL | NULL    |                |
+			+-----------------------------+------+------+-----+---------+----------------+
+			3 rows in set (0.00 sec)
 
+			CREATE TABLE customer_goods_purchased (
+				customer_goods_purchased_id INT AUTO_INCREMENT PRIMARY KEY,
+				customer_order_id INT NOT NULL,
+				good_number INT NOT NULL,
 
+				CONSTRAINT fk_customer_goods_purchased_order
+					FOREIGN KEY (customer_order_id)
+					REFERENCES customer_orders_verification(customer_order_id)
+					ON DELETE CASCADE
+					ON UPDATE CASCADE,
+
+				CONSTRAINT fk_customer_goods_purchased_product
+					FOREIGN KEY (good_number)
+					REFERENCES products(good_number)
+					ON DELETE RESTRICT
+					ON UPDATE CASCADE
+			);
 
 *****************************************************************************
 
-[order_payments]
-"order_payment_id ": primary-key auto_increment
-"customer_order_id" :foriegn-key from customer_orders 
-"total_number_of_items":string
-"order_total_price":string
-"order_payment_conpletion_status": paid/unpaid
+customer_order_payments
 
-CREATE TABLE order_payments (
-    order_payment_id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_order_id INT NOT NULL,
-    total_number_of_items VARCHAR(50) NOT NULL,
-    order_total_price VARCHAR(50) NOT NULL,
-    order_payment_completion_status ENUM('paid', 'unpaid') NOT NULL,
+		CREATE TABLE customer_order_payments (
+			customer_order_payments_id INT AUTO_INCREMENT PRIMARY KEY,
+			customer_goods_purchased_id INT NOT NULL,
+			total_number_of_goods_purchased INT NOT NULL,
+			total_price FLOAT NOT NULL,
 
-    CONSTRAINT fk_order_payments_customer_order
-        FOREIGN KEY (customer_order_id)
-        REFERENCES customer_orders(customer_order_id)
-);
+			CONSTRAINT fk_order_payments_cgp
+				FOREIGN KEY (customer_goods_purchased_id)
+				REFERENCES customer_goods_purchased(customer_goods_purchased_id)
+				ON DELETE CASCADE
+				ON UPDATE CASCADE
+		);
+		  
+		  
+		+---------------------------------+-------+------+-----+---------+----------------+
+		| Field                           | Type  | Null | Key | Default | Extra          |
+		+---------------------------------+-------+------+-----+---------+----------------+
+		| customer_order_payments_id      | int   | NO   | PRI | NULL    | auto_increment |
+		| customer_goods_purchased_id     | int   | NO   | MUL | NULL    |                |
+		| total_number_of_goods_purchased | int   | NO   |     | NULL    |                |
+		| total_price                     | float | NO   |     | NULL    |                |
+		+---------------------------------+-------+------+-----+---------+----------------+
+		4 rows in set (0.01 sec)  
+**********************************************************************************
+
+order_payments_verification (
+
+		CREATE TABLE order_payments_verification (
+			order_payments_verification_id INT AUTO_INCREMENT PRIMARY KEY,
+			customer_order_payments_id INT NOT NULL,
+			customer_payment_method VARCHAR(50) NULL,
+			customer_payment_status ENUM('paid', 'unpaid') NOT NULL,
+
+			CONSTRAINT fk_order_payments_verification_customer_order_payments
+				FOREIGN KEY (customer_order_payments_id)
+				REFERENCES customer_order_payments(customer_order_payments_id)
+				ON DELETE CASCADE
+				ON UPDATE CASCADE
+		);
 
 
-
-
+		+--------------------------------+-----------------------+------+-----+---------+----------------+
+		| Field                          | Type                  | Null | Key | Default | Extra          |
+		+--------------------------------+-----------------------+------+-----+---------+----------------+
+		| order_payments_verification_id | int                   | NO   | PRI | NULL    | auto_increment |
+		| customer_order_payments_id     | int                   | NO   | MUL | NULL    |                |
+		| customer_payment_method        | varchar(50)           | YES  |     | NULL    |                |
+		| customer_payment_status        | enum('paid','unpaid') | NO   |     | NULL    |                |
+		+--------------------------------+-----------------------+------+-----+---------+----------------+
+		4 rows in set (0.00 sec)
 
 *************************************************************************
-[Order_completion_status]
-"Order_completion_id ":primary-key auto_increment
-"customer_order_id" :foriegn-key from customer_orders 
-"order_completion_status": active/closed
+ order_payments 
 
-CREATE TABLE order_payments (
-    order_payment_id INT AUTO_INCREMENT PRIMARY KEY,
-    customer_order_id INT NOT NULL,
-    total_number_of_items VARCHAR(50) NOT NULL,
-    order_total_price VARCHAR(50) NOT NULL,
-    order_payment_completion_status ENUM('paid', 'unpaid') NOT NULL,
+		CREATE TABLE order_payments (
+			order_payment_id INT AUTO_INCREMENT PRIMARY KEY,
+			customer_order_id INT NOT NULL,
+			total_number_of_items VARCHAR(50) NOT NULL,
+			order_total_price VARCHAR(50) NOT NULL,
+			order_payment_completion_status ENUM('paid', 'unpaid') NOT NULL,
 
-    CONSTRAINT fk_order_payments_customer_order
-        FOREIGN KEY (customer_order_id)
-        REFERENCES customer_orders(customer_order_id)
-);
+			CONSTRAINT fk_order_payments_customer_order
+				FOREIGN KEY (customer_order_id)
+				REFERENCES customer_orders(customer_order_id)
+		);
 
-
-
-
+		+---------------------------------+-------+------+-----+---------+----------------+
+		| Field                           | Type  | Null | Key | Default | Extra          |
+		+---------------------------------+-------+------+-----+---------+----------------+
+		| customer_order_payments_id      | int   | NO   | PRI | NULL    | auto_increment |
+		| customer_goods_purchased_id     | int   | NO   | MUL | NULL    |                |
+		| total_number_of_goods_purchased | int   | NO   |     | NULL    |                |
+		| total_price                     | float | NO   |     | NULL    |                |
+		+---------------------------------+-------+------+-----+---------+----------------+
+		4 rows in set (0.01 sec)
 
 *********************************************************************
+
 [order_payments_time_of_completion]
-"order_payments_time_id":primary-key auto_increment
-"order_payment_id ":foriegn-key from order_payments
-"Dateandtime_order_payments_completed" Date-time    this is when "order_payment_conpletion_status" of an order =paid
 
-CREATE TABLE order_payments_time_of_completion (
-    order_payments_time_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_payment_id INT NOT NULL,
-    Dateandtime_order_payments_completed DATETIME NOT NULL,
 
-    CONSTRAINT fk_payment_time_payment
-        FOREIGN KEY (order_payment_id)
-        REFERENCES order_payments(order_payment_id)
-);
+			CREATE TABLE order_payments_time_of_completion (
+				order_payments_time_id INT AUTO_INCREMENT PRIMARY KEY,
+				order_payment_id INT NOT NULL,
+				Dateandtime_order_payments_completed DATETIME NOT NULL,
+
+				CONSTRAINT fk_payment_time_payment
+					FOREIGN KEY (order_payment_id)
+					REFERENCES order_payments(order_payment_id)
+			);
+
+			+--------------------------------+-----------------------+------+-----+---------+----------------+
+			| Field                          | Type                  | Null | Key | Default | Extra          |
+			+--------------------------------+-----------------------+------+-----+---------+----------------+
+			| order_payments_verification_id | int                   | NO   | PRI | NULL    | auto_increment |
+			| customer_order_payments_id     | int                   | NO   | MUL | NULL    |                |
+			| customer_payment_method        | varchar(50)           | YES  |     | NULL    |                |
+			| customer_payment_status        | enum('paid','unpaid') | NO   |     | NULL    |                |
+			+--------------------------------+-----------------------+------+-----+---------+----------------+
+			4 rows in set (0.00 sec)
 
 
 **********************************************************************
 
 [Order_completion_status_time_of_completion]
 
-"Order_completion_id ":primary-key auto_increment
-"order_payment_id ":foriegn-key from order_payments
-"Dateandtime_order_completion_completed" Date-time    this is when "Order_completion_status" of an order =paid
+		
+		CREATE TABLE order_completion_status_time_of_completion (
+			order_completion_time_id INT AUTO_INCREMENT PRIMARY KEY,
+			customer_order_id  INT NOT NULL,
+			Dateandtime_order_completion_completed DATETIME NOT NULL,
 
+			CONSTRAINT fk_completion_time_status
+				FOREIGN KEY (Order_completion_id)
+				REFERENCES order_completion_status(Order_completion_id)
+		);
 
-CREATE TABLE order_completion_status_time_of_completion (
-    order_completion_time_id INT AUTO_INCREMENT PRIMARY KEY,
-    Order_completion_id INT NOT NULL,
-    Dateandtime_order_completion_completed DATETIME NOT NULL,
-
-    CONSTRAINT fk_completion_time_status
-        FOREIGN KEY (Order_completion_id)
-        REFERENCES order_completion_status(Order_completion_id)
-);
-
+		+----------------------------------------+----------+------+-----+---------+----------------+
+		| Field                                  | Type     | Null | Key | Default | Extra          |
+		+----------------------------------------+----------+------+-----+---------+----------------+
+		| order_completion_time_id               | int      | NO   | PRI | NULL    | auto_increment |
+		| customer_order_id                      | int      | NO   | MUL | NULL    |                |
+		| Dateandtime_order_completion_completed | datetime | NO   |     | NULL    |                |
+		+----------------------------------------+----------+------+-----+---------+----------------+
+		3 rows in set (0.00 sec)
 
 ********************************************************************************
-
-[order_completed_by_user]
-"order_completed_by_user": primary-key auto_increment
-"user_id":foriegn-key from table users
-""order_db_id":foriegn-key from table order_table 
-
-CREATE TABLE order_completed_by_user (
-    order_completed_by_user_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    order_db_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (order_db_id) REFERENCES order_table(order_db_id)
-);
 
 
 
