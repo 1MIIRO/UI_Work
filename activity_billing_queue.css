@@ -80,26 +80,36 @@ body {
 .order-top-bar {
     display: flex;
     align-items: center;
-    padding: 10px;
+    justify-content: space-between; /* buttons left & right */
     border-bottom: 1px solid #ccc;
+    padding: 5px 10px;
+    position: relative; /* needed for absolute centering of middle */
 }
-.order-top-bar input {
-    flex: 1;
-    padding: 6px 10px;
-    border-radius: 5px;
-    border: 1px solid #aaa;
-    margin: 0 5px;
-}
-.order-top-bar button {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: none;
-    background: #fcfdff;
-    cursor: pointer;
+
+/* Middle editable texts */
+.order-top-bar .order-texts {
+    position: absolute;  /* center independently of buttons */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); /* perfectly center horizontally & vertically */
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 2px;
+}
+
+/* Customer Name */
+.order-top-bar .order-texts #customerName {
+    font-weight: bold;
+    color: #050505;
+    font-size: 18px;
+}
+
+/* Order Number */
+.order-top-bar .order-texts #orderNumber {
+    font-weight: 400;
+    color: #6c757d;
+    font-size: 10px;
 }
 
 /* DROPDOWNS */
@@ -226,3 +236,162 @@ body {
     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 .activity-display-text { color: #6c757d; font-size: 14px; }
+
+.display-screen {
+    border: 1px solid #ccc;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+/* Parent container uses flex column */
+.order-display-screens {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* space between screens */
+}
+
+/* Heights relative to each other, increased by 20% */
+.display-screen-1 {
+    flex: 2.4; /* 2 * 1.2 = 2.4 relative to screen 2 */
+    min-height: 240px; /* optional baseline */
+    overflow-y: auto; /* scrollable */
+}
+
+.display-screen-2 {
+    flex: 1.2; /* 1 * 1.2 = 1.2 relative */
+    min-height: 120px; /* optional baseline */
+}
+
+/* Scrollable Display Screen 1 */
+.display-screen-1 {
+    flex: 2.4; /* increased by 20% */
+    min-height: 240px;
+    overflow-y: auto;
+    padding-right: 5px; /* avoid scrollbar overlapping content */
+}
+
+/* Custom scrollbar for Webkit browsers (Chrome, Edge, Safari) */
+.display-screen-1::-webkit-scrollbar {
+    width: 8px;
+}
+
+.display-screen-1::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+    border-radius: 4px;
+}
+
+.display-screen-1::-webkit-scrollbar-thumb {
+    background-color: #4da6ff; /* light blue */
+    border-radius: 4px;
+    border: 2px solid #f1f1f1; /* adds spacing around thumb */
+}
+
+.display-screen-1 {
+    flex: 3.36;                 
+    min-height: 300px;          
+    overflow-y: auto;
+}
+
+.display-screen-2 {
+    flex: 1.68;                 
+    min-height: 100px;
+}
+
+.billing-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: monospace;   /* 🔑 ensures even spacing */
+}
+
+/* Receipt rows */
+.billing-row {
+    display: grid;
+    grid-template-columns: 1fr 120px; /* forces space before $ */
+    align-items: center;
+}
+
+/* Dollar column */
+.billing-row .amount {
+    text-align: left; /* space remains after $ */
+}
+
+/* Dotted separator */
+.billing-separator {
+    width: 100%;
+    border-top: 2px dotted #000;
+    margin: 6px 0;
+}
+
+/* TOTAL emphasis */
+.billing-row.total {
+    font-weight: bold;
+}
+.order-button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+    width: 100%;
+}
+
+/* TOP ROW */
+.button-top {
+    display: flex;
+    gap: 0; /* remove gap to prevent width overflow */
+    width: 100%;
+}
+
+/* Pill buttons - top row */
+.pill-btn {
+    box-sizing: border-box; /* includes padding & border in width */
+    width: calc(50% - 2px); /* split evenly minus small margin */
+    padding: 8px 0;  
+    border-radius: 999px;
+    border: 1px solid #ccc;
+    background: #f8f9fa;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* optional small visual separation between pills */
+.pill-btn:first-child {
+    margin-right: 4px;
+}
+
+.pill-btn:last-child {
+    margin-left: 4px;
+}
+
+/* BOTTOM ROW */
+.button-bottom {
+    width: 100%;
+}
+
+/* BIG BUTTON */
+.big-action-btn {
+    box-sizing: border-box; /* include padding & border in width */
+    width: 100%;
+    padding: 12px 0;
+    background: #0d6efd;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

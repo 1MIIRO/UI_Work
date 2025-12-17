@@ -130,7 +130,16 @@ def activity_billing_queue():
         "job_desc": session.get('job_desc')
     }
 
-    return render_template('activity_billing_queue.html',user=user_info)
+    # Fetch all tables for the dropdown
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT Table_db_id,  Table_number FROM tables ORDER BY  Table_number")
+    tables = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    # Pass the tables to the template
+    return render_template('activity_billing_queue.html', user=user_info, tables=tables)
 
 @app.route('/activity_Tables')
 def activity_Tables():
@@ -217,8 +226,6 @@ def update_tables():
     finally:
         cursor.close()
         conn.close()
-
-
 
 @app.route('/activity_Order_history')
 def activity_Order_history():
