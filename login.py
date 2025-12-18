@@ -10,7 +10,7 @@ def get_connection():
     return mysql.connector.connect(
         host='localhost',
         user='root',
-        password='',
+        password='1234',
         database='bakery_busness'
     )
 
@@ -82,7 +82,7 @@ def login():
 
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM `users` WHERE user_name=%s AND user_password=%s", (username, password))
+    cursor.execute("SELECT * FROM `user` WHERE user_name=%s AND user_password=%s", (username, password))
     user = cursor.fetchone()
     cursor.close()
     conn.close()
@@ -204,8 +204,6 @@ def activity_Tables():
         user=user_info,
         tables=all_tables
     )
-
-
 
 @app.route('/activity_Order_history')
 def activity_Order_history():

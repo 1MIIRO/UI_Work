@@ -131,7 +131,9 @@
         <div class="order-display-screens" style="display:flex; flex-direction:column; gap:10px; margin-top:0px;">
             <!-- Display Screen 1 (twice as big) -->
             <div class="display-screen display-screen-1">
-                <p>-------------</p>
+                <div id="orderItems" style="display:flex; flex-direction:column; gap:5px;">
+                      <!-- Selected products will appear here -->
+                 </div>
             </div>
 
             <!-- Display Screen 2 -->
@@ -145,21 +147,20 @@
 
                     <div class="billing-row">
                         <span>Tax (10%)</span>
-                        <span class="amount">$</span>
+                        <span id="taxAmount" class="amount1">$0.00</span>
                     </div>
 
                     <div class="billing-row">
-                        <span>Discount</span>
-                        <span class="amount">$</span>
+                            <span>Discount</span>
+                            <span id="discountDisplay" class="amount">0%</span>
                     </div>
 
                     <div class="billing-separator"></div>
 
                     <div class="billing-row total">
                         <span>TOTAL</span>
-                        <span class="amount">$</span>
+                        <span id="totalAmount" class="amount">$0.00</span>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -239,7 +240,8 @@
     {% for item in products %}
         <div class="product-card"
             data-description="{{ item['description'] }}"
-            data-name="{{ item['good_name'] }}">
+            data-name="{{ item['good_name'] }}"
+            data-price="{{ item['price'] }}">
 
             <img src="{{ url_for('static', filename=item.image_path.replace('\\','/').split('static/')[1]) }}"
                 alt="{{ item.good_name }}">
@@ -274,14 +276,16 @@
 
     <!-- SCRIPT -->
     <script>
+    // DATE & TIME
         function updateDateTime() {
-        const now = new Date();
-        document.getElementById('dateText').textContent = now.toLocaleDateString();
-        document.getElementById('timeText').textContent = now.toLocaleTimeString();
+            const now = new Date();
+            document.getElementById('dateText').textContent = now.toLocaleDateString();
+            document.getElementById('timeText').textContent = now.toLocaleTimeString();
         }
         setInterval(updateDateTime, 1000);
         updateDateTime();
 
+        // ELEMENTS
         const orderToggle = document.getElementById('orderToggle');
         const sidebar = document.getElementById('sidebar');
         const orderContainer = document.getElementById('orderContainer');
@@ -291,7 +295,7 @@
         const productDisplay = document.querySelector('.product-display');
         const buttons = document.querySelectorAll('.dashboard-btn');
         const topBarItems = document.querySelectorAll('.top-bar-item');
-
+        let tempOrderItems = [];
         // SHIFT FUNCTION
         function shiftUI(shiftSidebar, shiftOrder) {
             if (shiftSidebar) {
@@ -333,8 +337,8 @@
             sidebar.classList.toggle('active');
             shiftUI(sidebar.classList.contains('active'), false);
         });
-
-        // ORDER TOGGLE BUTTON (ORIGINAL LOGIC PRESERVED)
+    
+        // ORDER TOGGLE
         orderToggle.addEventListener('click', () => {
             if (orderToggle.textContent === "Open Order") {
                 orderContainer.classList.add("active");
@@ -351,176 +355,252 @@
                 orderToggle.classList.add("open-order");
 
                 shiftUI(false, false);
+
+               
+        // ===== RESET DISPLAY SCREEN 1 =====
+        orderItems.innerHTML = "";  // clears all selected products
+
+        // ===== RESET TEMP JSON =====
+        tempOrderItems = [];
+
+        // ===== RESET SUBTOTAL =====
+        document.querySelector('.subtotal-amount').textContent = '$0.00';
             }
         });
 
-        // Clicking sidebar closes it
+        // CLOSE SIDEBAR ON CLICK
         sidebar.addEventListener('click', function () {
             sidebar.classList.remove('active');
             shiftUI(false, false);
         });
 
+        // DROPDOWN FUNCTIONALITY
         document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.dropdown-btn').forEach(btn => {
+                if (!btn.dataset.defaultText) {
+                    btn.dataset.defaultText = btn.textContent.replace(' ▼','');
+                }
 
-        // Initialize all dropdown buttons
-        document.querySelectorAll('.dropdown-btn').forEach(btn => {
-            // Store the default text if not already stored
-            if (!btn.dataset.defaultText) {
-                btn.dataset.defaultText = btn.textContent.replace(' ▼','');
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const content = this.nextElementSibling;
+                    content.style.display = content.style.display === 'block' ? 'none' : 'block';
+                });
+            });
+
+            function setupDropdownItems(dropdownItems) {
+                dropdownItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const dropdownBtn = this.closest('.dropdown').querySelector('.dropdown-btn');
+                        dropdownBtn.textContent = this.textContent + ' ▼';
+                        dropdownBtn.dataset.selectedId = this.dataset.id;
+
+                        this.parentElement.querySelectorAll('.dot').forEach(dot => dot.style.background = 'transparent');
+                        this.querySelector('.dot').style.background = 'lightblue';
+                    });
+
+                    item.addEventListener('dblclick', function(e) {
+                        e.stopPropagation();
+                        const dropdownBtn = this.closest('.dropdown').querySelector('.dropdown-btn');
+                        dropdownBtn.textContent = dropdownBtn.dataset.defaultText + ' ▼';
+                        delete dropdownBtn.dataset.selectedId;
+                        this.querySelector('.dot').style.background = 'transparent';
+                    });
+                });
             }
 
-            // Toggle dropdown display
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const content = this.nextElementSibling;
-                content.style.display = content.style.display === 'block' ? 'none' : 'block';
-            });
-        });
-
-        // Function to handle selection/unselection
-        function setupDropdownItems(dropdownItems) {
-            dropdownItems.forEach(item => {
-                // Single click = select
-                item.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const dropdownBtn = this.closest('.dropdown').querySelector('.dropdown-btn');
-                    
-                    // Update button text
-                    dropdownBtn.textContent = this.textContent + ' ▼';
-                    dropdownBtn.dataset.selectedId = this.dataset.id;
-
-                    // Remove highlight from all dots in this dropdown
-                    this.parentElement.querySelectorAll('.dot').forEach(dot => dot.style.background = 'transparent');
-
-                    // Highlight the dot for this selection
-                    this.querySelector('.dot').style.background = 'lightblue';
-
-                    console.log('Selected ID:', this.dataset.id);
-                    // Dropdown stays open
-                });
-
-                // Double click = unselect
-                item.addEventListener('dblclick', function(e) {
-                    e.stopPropagation();
-                    const dropdownBtn = this.closest('.dropdown').querySelector('.dropdown-btn');
-
-                    // Reset button text and selected ID
-                    dropdownBtn.textContent = dropdownBtn.dataset.defaultText + ' ▼';
-                    delete dropdownBtn.dataset.selectedId;
-
-                    // Reset dot
-                    this.querySelector('.dot').style.background = 'transparent';
-
-                    console.log('Option unselected');
-                });
-            });
-        }
-
-        // Apply to all dropdown items
-        document.querySelectorAll('.dropdown-content').forEach(content => {
-            setupDropdownItems(content.querySelectorAll('.dropdown-item'));
-        });
-
-        // Close any dropdown if clicked outside
-        document.addEventListener('click', function() {
             document.querySelectorAll('.dropdown-content').forEach(content => {
-                content.style.display = 'none';
+                setupDropdownItems(content.querySelectorAll('.dropdown-item'));
             });
-        });
 
-    });
-    
-        document.addEventListener('DOMContentLoaded', function() {
-        const pencilBtn = document.getElementById('editPencil');
-        const customerName = document.getElementById('customerName');
-        const orderNumber = document.getElementById('orderNumber');
-
-        // Store original/default values
-        const defaultCustomerName = customerName.textContent;
-        const defaultOrderNumber = orderNumber.textContent;
-
-        let isEditing = false; // Track edit mode
-
-        pencilBtn.addEventListener('click', function() {
-            if (!isEditing) {
-                // Enter edit mode
-                isEditing = true;
-                customerName.contentEditable = "true";
-                orderNumber.contentEditable = "true";
-
-                // Optional: highlight editable fields
-                customerName.style.borderBottom = "1px dashed #000";
-                orderNumber.style.borderBottom = "1px dashed #000";
-
-                customerName.focus(); // focus first field
-            } else {
-                // Save or reset changes
-                isEditing = false;
-                customerName.contentEditable = "false";
-                orderNumber.contentEditable = "false";
-
-                // Remove highlight
-                customerName.style.borderBottom = "none";
-                orderNumber.style.borderBottom = "none";
-
-                // If fields are empty, reset to defaults
-                if (customerName.textContent.trim() === "") customerName.textContent = defaultCustomerName;
-                if (orderNumber.textContent.trim() === "") orderNumber.textContent = defaultOrderNumber;
-
-                console.log("Saved Customer Name:", customerName.textContent);
-                console.log("Saved Order Number:", orderNumber.textContent);
-            }
-        });
-    });
-
-
-         const productCards = document.querySelectorAll('.product-card');
-            const productModal = document.getElementById('productModal');
-            const closeModal = document.getElementById('closeModal');
-            const modalImage = document.getElementById('modalImage');
-            const modalDescription = document.getElementById('modalDescription');
-            const qtyCounter = document.getElementById('qtyCounter');
-            const decreaseQty = document.getElementById('decreaseQty');
-            const increaseQty = document.getElementById('increaseQty');
-            const selectBtn = document.getElementById('selectBtn');
-
-            let currentQty = 1;
-
-            productCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    modalImage.src = card.querySelector('img').src;
-                    // Use the correct database column via dataset
-                    modalDescription.textContent = card.dataset.description;
-
-                    currentQty = 1;
-                    qtyCounter.textContent = currentQty;
-
-                    productModal.style.display = 'flex';
+            document.addEventListener('click', function() {
+                document.querySelectorAll('.dropdown-content').forEach(content => {
+                    content.style.display = 'none';
                 });
             });
+        });
 
-            closeModal.addEventListener('click', () => {
-                productModal.style.display = 'none';
-            });
+        // EDITABLE ORDER TEXTS
+        document.addEventListener('DOMContentLoaded', function() {
+            const pencilBtn = document.getElementById('editPencil');
+            const customerName = document.getElementById('customerName');
+            const orderNumber = document.getElementById('orderNumber');
 
-            increaseQty.addEventListener('click', () => {
-                currentQty++;
-                qtyCounter.textContent = currentQty;
-            });
+            const defaultCustomerName = customerName.textContent;
+            const defaultOrderNumber = orderNumber.textContent;
 
-            decreaseQty.addEventListener('click', () => {
-                if (currentQty > 1) {
-                    currentQty--;
-                    qtyCounter.textContent = currentQty;
+            let isEditing = false;
+
+            pencilBtn.addEventListener('click', function() {
+                if (!isEditing) {
+                    isEditing = true;
+                    customerName.contentEditable = "true";
+                    orderNumber.contentEditable = "true";
+                    customerName.style.borderBottom = "1px dashed #000";
+                    orderNumber.style.borderBottom = "1px dashed #000";
+                    customerName.focus();
+                } else {
+                    isEditing = false;
+                    customerName.contentEditable = "false";
+                    orderNumber.contentEditable = "false";
+                    customerName.style.borderBottom = "none";
+                    orderNumber.style.borderBottom = "none";
+
+                    if (customerName.textContent.trim() === "") customerName.textContent = defaultCustomerName;
+                    if (orderNumber.textContent.trim() === "") orderNumber.textContent = defaultOrderNumber;
                 }
             });
+        });
 
-            selectBtn.addEventListener('click', () => {
-                alert(`You selected ${currentQty} item(s).`);
-                productModal.style.display = 'none';
+        // PRODUCT MODAL & ORDER BAR INTEGRATION
+        const productCards = document.querySelectorAll('.product-card');
+        const productModal = document.getElementById('productModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalDescription = document.getElementById('modalDescription');
+        const qtyCounter = document.getElementById('qtyCounter');
+        const decreaseQty = document.getElementById('decreaseQty');
+        const increaseQty = document.getElementById('increaseQty');
+        const selectBtn = document.getElementById('selectBtn');
+        const orderItems = document.getElementById('orderItems'); // MUST EXIST IN HTML
+
+        let currentQty = 1;
+        let selectedProduct = null;
+
+        // OPEN MODAL
+        productCards.forEach(card => {
+            card.addEventListener('click', () => {
+                modalImage.src = card.querySelector('img').src;
+                modalDescription.textContent = card.dataset.description;
+                currentQty = 1;
+                qtyCounter.textContent = currentQty;
+
+                selectedProduct = {
+                    name: card.dataset.name,
+                    price: card.dataset.price,
+                    imageSrc: card.querySelector('img').src
+                };
+
+                productModal.style.display = 'flex';
+            });
+        });
+
+        // CLOSE MODAL
+        closeModal.addEventListener('click', () => {
+            productModal.style.display = 'none';
+            selectedProduct = null;
+        });
+
+        // QUANTITY CONTROLS
+        increaseQty.addEventListener('click', () => {
+            currentQty++;
+            qtyCounter.textContent = currentQty;
+        });
+        decreaseQty.addEventListener('click', () => {
+            if (currentQty > 1) {
+                currentQty--;
+                qtyCounter.textContent = currentQty;
+            }
+        });
+
+        // SELECT PRODUCT
+        selectBtn.addEventListener('click', () => {
+            if (!selectedProduct) return;
+
+            const priceNum = Number(selectedProduct.price); // force number
+            const totalPrice = (priceNum * currentQty).toFixed(2);
+
+            const itemRow = document.createElement('div');
+            itemRow.style.display = 'flex';
+            itemRow.style.alignItems = 'center';
+            itemRow.style.gap = '10px';
+            itemRow.style.marginBottom = '8px';
+
+            itemRow.innerHTML = `
+                <img src="${selectedProduct.imageSrc}" style="width:40px; height:40px; object-fit:cover; border-radius:6px;">
+                <div style="flex:1;">
+                    <div style="font-weight:bold;">${selectedProduct.name}</div>
+                    <div style="color:green;">$${totalPrice}</div>
+                </div>
+                <div>Qty: ${currentQty}</div>
+            `;
+
+            orderItems.appendChild(itemRow);
+
+            tempOrderItems.push({
+                name: selectedProduct.name,
+                price: priceNum,
+                quantity: currentQty,
+                sub_total: priceNum * currentQty, // numeric value
+                imageSrc: selectedProduct.imageSrc
             });
 
-    </script>
+            productModal.style.display = 'none';
+            selectedProduct = null;
+
+            updateSubtotal();
+            updateTaxDisplay();
+            updateTotal();
+        });
+        
+        function updateSubtotal() {
+            const subtotalEl = document.querySelector('.billing-row span.amount'); // first .amount span
+            const subtotal = tempOrderItems.reduce((acc, item) => acc + item.sub_total, 0);
+            subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+        }
+
+        function calculateTax(subtotal) {
+                const taxRate = 0.1; // 10%
+                return subtotal * taxRate;
+        }
+
+        function updateTaxDisplay() {
+            const subtotal = tempOrderItems.reduce((acc, item) => acc + item.sub_total, 0);
+            const tax = calculateTax(subtotal);
+
+            // Ensure tax is always a number and formatted to 2 decimals
+            document.getElementById('taxAmount').textContent = `$${Number(tax.toFixed(2))}`;
+        }
+
+            // PROMO-CODE BUTTON FUNCTIONALITY
+        const promoBtn = document.querySelector('.pill-btn_order'); // assumes first button is Promo-code
+        const discountDisplay = document.getElementById('discountDisplay');
+
+        promoBtn.addEventListener('click', () => {
+            let discountPercent = prompt("Enter discount percentage (e.g., 10 for 10%)");
+            
+            if (discountPercent !== null) {
+                discountPercent = Number(discountPercent);
+                
+                if (isNaN(discountPercent) || discountPercent < 0 || discountPercent > 100) {
+                    alert("Please enter a valid number between 0 and 100");
+                    return;
+                }
+
+                // Show the discount percentage
+                discountDisplay.textContent = discountPercent + "%";
+
+                // Store discount for future use (optional)
+                tempOrderItems.discountPercent = discountPercent;
+            }
+        });
+
+        function updateTotal() {
+            const subtotal = tempOrderItems.reduce((acc, item) => acc + item.sub_total, 0);
+
+            const tax = calculateTax(subtotal);
+
+            const discountPercent = Number(tempOrderItems.discountPercent || 0);
+            const discountAmount = subtotal * (discountPercent / 100);
+
+            const total = subtotal + tax - discountAmount;
+
+            document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
+        }
+
+
+</script>
 
 </body>
 </html>
