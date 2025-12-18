@@ -123,47 +123,44 @@ body {
 .order-top-bar {
     display: flex;
     align-items: center;
-    padding: 10px;
+    justify-content: space-between; /* buttons left & right */
     border-bottom: 1px solid #ccc;
-}
-
-.order-top-bar input {
-    flex: 1;
     padding: 5px 10px;
-    border-radius: 5px;
-    border: 1px solid #aaa;
-    margin: 0 5px;
+    position: relative; /* needed for absolute centering of middle */
 }
 
-.order-top-bar button {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: none;
-    background: #fcfdff;
-    color: white;
-    cursor: pointer;
+/* Middle editable texts */
+.order-top-bar .order-texts {
+    position: absolute;  /* center independently of buttons */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); /* perfectly center horizontally & vertically */
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: 2px;
+}
+
+/* Customer Name */
+.order-top-bar .order-texts #customerName {
     font-weight: bold;
-    font-size: 16px;
+    color: #050505;
+    font-size: 18px;
 }
 
-.dropdown {
-    position: relative;
+/* Order Number */
+.order-top-bar .order-texts #orderNumber {
+    font-weight: 400;
+    color: #6c757d;
+    font-size: 10px;
 }
 
-/* MAKE DROPDOWNS SIDE BY SIDE */
+/* DROPDOWNS */
 .order-dropdowns {
     display: flex;
-    gap: 10px;
+    gap: 5px;
 }
-
-.order-dropdowns .dropdown {
-    flex: 1;
-}
-
+.order-dropdowns .dropdown { flex: 1; }
 .dropdown-btn {
     width: 100%;
     padding: 8px;
@@ -174,14 +171,128 @@ body {
     cursor: pointer;
     text-align: left;
 }
-
 .dropdown-content {
-    position: relative;
     background: #f0f0f0;
     border: 1px solid #ccc;
     border-radius: 5px;
     margin-top: 5px;
     padding: 5px;
+}
+
+/* Parent container uses flex column */
+.order-display-screens {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* space between screens */
+    height: calc(100% - 150px); /* optional: give total height minus space for buttons */
+}
+
+/* Display Screen 1: larger */
+.display-screen-1 {
+    flex: 3.24;          /* increased from 2.4 → bigger portion */
+    min-height: 300px; 
+    overflow-y: auto;
+}
+
+/* Display Screen 2: smaller, pushed down */
+.display-screen-2 {
+    flex: 1.5;          /* decreased from 1.2 → smaller portion */
+    min-height: 100px; 
+}
+
+/* Custom scrollbar for Webkit browsers (Chrome, Edge, Safari) */
+.display-screen-1::-webkit-scrollbar {
+    width: 8px;
+}
+
+.display-screen-1::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+    border-radius: 4px;
+}
+
+.display-screen-1::-webkit-scrollbar-thumb {
+    background-color: #4da6ff; /* light blue */
+    border-radius: 4px;
+    border: 2px solid #f1f1f1; /* adds spacing around thumb */
+}
+
+.billing-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: monospace;   /* 🔑 ensures even spacing */
+}
+
+/* Receipt rows */
+.billing-row {
+    display: grid;
+    grid-template-columns: 1fr 120px; /* forces space before $ */
+    align-items: center;
+}
+
+/* Dollar column */
+.billing-row .amount {
+    text-align: left; /* space remains after $ */
+}
+
+/* Dotted separator */
+.billing-separator {
+    width: 100%;
+    border-top: 2px dotted #000;
+    margin: 6px 0;
+}
+
+/* TOTAL emphasis */
+.billing-row.total {
+    font-weight: bold;
+}
+
+.order-button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-top: auto; /* pushes buttons to bottom of the container */
+}
+
+/* Pill buttons - top row */
+.pill-btn_order {
+    box-sizing: border-box; /* includes padding & border in width */
+    width: calc(50% - 2px); /* split evenly minus small margin */
+    padding: 6px 0;  
+    border-radius: 999px;
+    border: 1px solid #00025d;
+    background: #f8f9fa;
+    font-size: 13px;
+    cursor: pointer;
+    color:#1a2228
+}
+.pill-btn_order:hover { border-color: #165030; color: #165030; }
+
+.pill-btn_order:first-child {
+    margin-right: 4px;
+}
+
+.pill-btn_order:last-child {
+    margin-left: 4px;
+}
+
+.button-bottom {
+    width: 100%;
+}
+
+/* BIG BUTTON */
+.big-action-btn {
+    box-sizing: border-box; /* include padding & border in width */
+    width: 100%;
+    padding: 8px 0;
+    background: #0d6efd;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 .search-container {
@@ -211,6 +322,19 @@ body {
 
 .shifted-right-time {
     margin-right: 25%;
+}
+
+.button-top {
+    display: flex;
+    gap: 0; /* remove gap to prevent width overflow */
+    width: 100%;
+}
+
+.display-screen {
+    border: 1px solid #ccc;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 6px;
 }
 
 /* PRODUCT DISPLAY */

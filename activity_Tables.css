@@ -316,29 +316,42 @@ body {
     gap: 15px;                 /* space between table cards */
 }
 
+/* Table card */
 .table-card {
-    flex: 0 1 120px;           
+    flex: 0 1 120px;           /* min width 120px, adjust */
     background: #ffffff;
     border-radius: 12px;
-    padding: 12px;
-    min-height: 100px;
+    padding: 20px;
+    height: 100px;
     display: flex;
-    flex-direction: column;   /* stack children vertically */
-    align-items: center;      /* center horizontally */
-    justify-content: flex-start; /* stack from top */
+    align-items: center;
+    justify-content: center;
     font-weight: 600;
-    color: #332424;
+    color: #333;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(78, 60, 60, 0.08);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-
 .table-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(2, 75, 99, 0.12);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
 }
 
+
+.table-pill {
+    background: #eef1f4;         
+    color: #2f2f2f;
+
+    padding: 8px 22px;
+    border-radius: 999px;
+
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+
+    border: 1px solid #d6dbe0;
+}
 
 .table-meta {
     margin-top: 8px;
@@ -399,14 +412,14 @@ body {
 }
 
 .status-dot.reserved {
-    background-color: #ff070733;
+    background-color: #dc3545;
 }
 .table-card.available {
     border: 2px solid #bfc5cc; /* grey outline for available */
 }
 
 .table-card.reserved {
-    border: 2px solid #ff070733; /* red outline for reserved */
+    border: 2px solid #dc3545; /* red outline for reserved */
 }
 
 .hidden-floor {
@@ -414,43 +427,6 @@ body {
 }
 
 
-/* ===================== TABLE CARD: RESERVED ===================== */
-.table-card.reserved {
-    background-color: #ffc10733; /* light yellow for reserved */
-    border: 2px solid #dc3545;   /* red border for reserved */
-}
-
-/* ===================== TABLE CARD: SERVED ===================== */
-.table-card.served {
-    background-color: #007bff33; /* light blue for served */
-    border: 2px solid #007bff;   /* blue border for served */
-}
-
-/* ===================== TABLE STATUS PILL ===================== */
-.table-pill {
-    background-color: #001739; /* dark blue pill */
-    color: white;
-    padding: 6px 12px;
-    border-radius: 50px;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-/* ===================== RESERVED INFO ===================== */
-.reserved-info {
-    display: flex;
-    flex-direction: column; /* stack date and guests vertically */
-    align-items: center;
-    font-size: 0.85rem;
-}
-
-/* ===================== SERVED INFO ===================== */
-.served-info {
-    display: flex;
-    flex-direction: column; /* stack guests and table number vertically */
-    align-items: center;
-    font-size: 0.85rem;
-}
 
 
 

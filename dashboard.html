@@ -83,28 +83,102 @@
 
     <!-- ORDER PANEL -->
     <div id="orderContainer" class="order-container">
-        <div class="order-top-bar">
+        <div class="order-top-bar" style="display:flex; align-items:center; gap:10px;">
+            <!-- Left notepad button -->
             <button class="btn btn-light btn-sm">
-                <img src="{{ url_for('static', filename='images/nootpad_icon.jpg') }}" alt="calendar" style="width:16px; height:16px;">
+                <img src="{{ url_for('static', filename='images/nootpad_icon.jpg') }}" style="width:16px;">
             </button>
-            <input type="text" placeholder="Customer Name">
-            <button class="btn btn-light btn-sm">
-                <img src="{{ url_for('static', filename='images/pencil_icon.jpg') }}" alt="pencil" style="width:16px; height:16px;">
+
+            <!-- Editable texts in the middle -->
+            <div class="order-texts" style="display:flex; flex-direction:column; flex:1; gap:2px;">
+                <div id="customerName" contenteditable="false" class="editable-text">Customer Name</div>
+                <div id="orderNumber" contenteditable="false" class="editable-text">Order Number</div>
+            </div>
+            
+            <!-- Right pencil button -->
+            <button id="editPencil" class="btn btn-light btn-sm">
+                <img src="{{ url_for('static', filename='images/pencil_icon.jpg') }}" style="width:16px;">
             </button>
         </div>
-        <div class="order-dropdowns p-3">
+
+        <div class="order-dropdowns p-2">
             <div class="dropdown">
-                <button class="dropdown-btn">Table▼</button>
-                <div class="dropdown-content" style="display: none;"></div>
+                <button class="dropdown-btn">Select Table ▼</button>
+                <div class="dropdown-content" style="display:none; border: 1px solid #ccc; background: #fff; position: absolute; z-index: 1000; max-height: 200px; overflow-y: auto;">
+                    {% for table in tables %}
+                        <div class="dropdown-item" data-id="{{ table.Table_db_id }}" style="padding: 5px 10px; cursor: pointer; display:flex; align-items:center; gap:8px;">
+                            <span class="dot" style="width:8px; height:8px; border-radius:50%; background:transparent; display:inline-block;"></span>
+                            Table {{ table.Table_number }}
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
             <div class="dropdown">
-                <button class="dropdown-btn">Dine_in ▼</button>
-                <div class="dropdown-content" style="display: none;"></div>
+                <button class="dropdown-btn" data-default-text="Order Type">Order Type ▼</button>
+                <div class="dropdown-content" style="display:none; border: 1px solid #ccc; background: #fff; position: absolute; z-index: 1000;">
+                    <div class="dropdown-item" data-id="dine_in" style="padding: 5px 10px; cursor: pointer; display:flex; align-items:center; gap:8px;">
+                        <span class="dot" style="width:8px; height:8px; border-radius:50%; background:transparent; display:inline-block;"></span>
+                        Dine_in
+                    </div>
+                    <div class="dropdown-item" data-id="takeaway" style="padding: 5px 10px; cursor: pointer; display:flex; align-items:center; gap:8px;">
+                        <span class="dot" style="width:8px; height:8px; border-radius:50%; background:transparent; display:inline-block;"></span>
+                        Takeaway
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="order-content p-3">
-            <p>Order details will appear here...</p>
+
+        <div class="order-display-screens" style="display:flex; flex-direction:column; gap:10px; margin-top:0px;">
+            <!-- Display Screen 1 (twice as big) -->
+            <div class="display-screen display-screen-1">
+                <p>-------------</p>
+            </div>
+
+            <!-- Display Screen 2 -->
+            <div class="display-screen display-screen-2">
+                <div class="billing-summary">
+                    
+                    <div class="billing-row">
+                        <span>Subtotal</span>
+                        <span class="amount">$</span>
+                    </div>
+
+                    <div class="billing-row">
+                        <span>Tax (10%)</span>
+                        <span class="amount">$</span>
+                    </div>
+
+                    <div class="billing-row">
+                        <span>Discount</span>
+                        <span class="amount">$</span>
+                    </div>
+
+                    <div class="billing-separator"></div>
+
+                    <div class="billing-row total">
+                        <span>TOTAL</span>
+                        <span class="amount">$</span>
+                    </div>
+
+                </div>
+            </div>
         </div>
+        
+        <div class="order-button-container">
+
+            <!-- TOP ROW -->
+            <div class="button-top">
+                <button class="pill-btn_order">Promo-code</button>
+                <button class="pill-btn_order">QRS</button>
+            </div>
+
+            <!-- BOTTOM ROW -->
+            <div class="button-bottom">
+                <button class="big-action-btn">PLACE ORDER</button>
+            </div>
+
+        </div>
+
     </div>
 
     <!-- TOP BAR -->
@@ -198,8 +272,6 @@
         </div>
     </div>
 
-
-
     <!-- SCRIPT -->
     <script>
         function updateDateTime() {
@@ -288,14 +360,119 @@
             shiftUI(false, false);
         });
 
-        // DROPDOWN BUTTON LOGIC
-        const dropdownBtns = document.querySelectorAll('.dropdown-btn');
-        dropdownBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const content = btn.nextElementSibling;
-                content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        document.addEventListener('DOMContentLoaded', function() {
+
+        // Initialize all dropdown buttons
+        document.querySelectorAll('.dropdown-btn').forEach(btn => {
+            // Store the default text if not already stored
+            if (!btn.dataset.defaultText) {
+                btn.dataset.defaultText = btn.textContent.replace(' ▼','');
+            }
+
+            // Toggle dropdown display
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const content = this.nextElementSibling;
+                content.style.display = content.style.display === 'block' ? 'none' : 'block';
             });
         });
+
+        // Function to handle selection/unselection
+        function setupDropdownItems(dropdownItems) {
+            dropdownItems.forEach(item => {
+                // Single click = select
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const dropdownBtn = this.closest('.dropdown').querySelector('.dropdown-btn');
+                    
+                    // Update button text
+                    dropdownBtn.textContent = this.textContent + ' ▼';
+                    dropdownBtn.dataset.selectedId = this.dataset.id;
+
+                    // Remove highlight from all dots in this dropdown
+                    this.parentElement.querySelectorAll('.dot').forEach(dot => dot.style.background = 'transparent');
+
+                    // Highlight the dot for this selection
+                    this.querySelector('.dot').style.background = 'lightblue';
+
+                    console.log('Selected ID:', this.dataset.id);
+                    // Dropdown stays open
+                });
+
+                // Double click = unselect
+                item.addEventListener('dblclick', function(e) {
+                    e.stopPropagation();
+                    const dropdownBtn = this.closest('.dropdown').querySelector('.dropdown-btn');
+
+                    // Reset button text and selected ID
+                    dropdownBtn.textContent = dropdownBtn.dataset.defaultText + ' ▼';
+                    delete dropdownBtn.dataset.selectedId;
+
+                    // Reset dot
+                    this.querySelector('.dot').style.background = 'transparent';
+
+                    console.log('Option unselected');
+                });
+            });
+        }
+
+        // Apply to all dropdown items
+        document.querySelectorAll('.dropdown-content').forEach(content => {
+            setupDropdownItems(content.querySelectorAll('.dropdown-item'));
+        });
+
+        // Close any dropdown if clicked outside
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.dropdown-content').forEach(content => {
+                content.style.display = 'none';
+            });
+        });
+
+    });
+    
+        document.addEventListener('DOMContentLoaded', function() {
+        const pencilBtn = document.getElementById('editPencil');
+        const customerName = document.getElementById('customerName');
+        const orderNumber = document.getElementById('orderNumber');
+
+        // Store original/default values
+        const defaultCustomerName = customerName.textContent;
+        const defaultOrderNumber = orderNumber.textContent;
+
+        let isEditing = false; // Track edit mode
+
+        pencilBtn.addEventListener('click', function() {
+            if (!isEditing) {
+                // Enter edit mode
+                isEditing = true;
+                customerName.contentEditable = "true";
+                orderNumber.contentEditable = "true";
+
+                // Optional: highlight editable fields
+                customerName.style.borderBottom = "1px dashed #000";
+                orderNumber.style.borderBottom = "1px dashed #000";
+
+                customerName.focus(); // focus first field
+            } else {
+                // Save or reset changes
+                isEditing = false;
+                customerName.contentEditable = "false";
+                orderNumber.contentEditable = "false";
+
+                // Remove highlight
+                customerName.style.borderBottom = "none";
+                orderNumber.style.borderBottom = "none";
+
+                // If fields are empty, reset to defaults
+                if (customerName.textContent.trim() === "") customerName.textContent = defaultCustomerName;
+                if (orderNumber.textContent.trim() === "") orderNumber.textContent = defaultOrderNumber;
+
+                console.log("Saved Customer Name:", customerName.textContent);
+                console.log("Saved Order Number:", orderNumber.textContent);
+            }
+        });
+    });
+
 
          const productCards = document.querySelectorAll('.product-card');
             const productModal = document.getElementById('productModal');

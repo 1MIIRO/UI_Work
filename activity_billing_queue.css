@@ -115,7 +115,7 @@ body {
 /* DROPDOWNS */
 .order-dropdowns {
     display: flex;
-    gap: 10px;
+    gap: 5px;
 }
 .order-dropdowns .dropdown { flex: 1; }
 .dropdown-btn {
@@ -249,26 +249,20 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px; /* space between screens */
+    height: calc(100% - 150px); /* optional: give total height minus space for buttons */
 }
 
-/* Heights relative to each other, increased by 20% */
+/* Display Screen 1: larger */
 .display-screen-1 {
-    flex: 2.4; /* 2 * 1.2 = 2.4 relative to screen 2 */
-    min-height: 240px; /* optional baseline */
-    overflow-y: auto; /* scrollable */
-}
-
-.display-screen-2 {
-    flex: 1.2; /* 1 * 1.2 = 1.2 relative */
-    min-height: 120px; /* optional baseline */
-}
-
-/* Scrollable Display Screen 1 */
-.display-screen-1 {
-    flex: 2.4; /* increased by 20% */
-    min-height: 240px;
+    flex: 3.24;          /* increased from 2.4 → bigger portion */
+    min-height: 300px; 
     overflow-y: auto;
-    padding-right: 5px; /* avoid scrollbar overlapping content */
+}
+
+/* Display Screen 2: smaller, pushed down */
+.display-screen-2 {
+    flex: 1.5;          /* decreased from 1.2 → smaller portion */
+    min-height: 100px; 
 }
 
 /* Custom scrollbar for Webkit browsers (Chrome, Edge, Safari) */
@@ -285,17 +279,6 @@ body {
     background-color: #4da6ff; /* light blue */
     border-radius: 4px;
     border: 2px solid #f1f1f1; /* adds spacing around thumb */
-}
-
-.display-screen-1 {
-    flex: 3.36;                 
-    min-height: 300px;          
-    overflow-y: auto;
-}
-
-.display-screen-2 {
-    flex: 1.68;                 
-    min-height: 100px;
 }
 
 .billing-summary {
@@ -332,8 +315,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 12px;
     width: 100%;
+    margin-top: auto; /* pushes buttons to bottom of the container */
 }
 
 /* TOP ROW */
@@ -344,27 +327,28 @@ body {
 }
 
 /* Pill buttons - top row */
-.pill-btn {
+.pill-btn_order {
     box-sizing: border-box; /* includes padding & border in width */
     width: calc(50% - 2px); /* split evenly minus small margin */
-    padding: 8px 0;  
+    padding: 6px 0;  
     border-radius: 999px;
-    border: 1px solid #ccc;
+    border: 1px solid #00025d;
     background: #f8f9fa;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
+    color:#1a2228
 }
 
-/* optional small visual separation between pills */
-.pill-btn:first-child {
+.pill-btn_order:hover { border-color: #165030; color: #165030; }
+
+.pill-btn_order:first-child {
     margin-right: 4px;
 }
 
-.pill-btn:last-child {
+.pill-btn_order:last-child {
     margin-left: 4px;
 }
 
-/* BOTTOM ROW */
 .button-bottom {
     width: 100%;
 }
@@ -373,16 +357,15 @@ body {
 .big-action-btn {
     box-sizing: border-box; /* include padding & border in width */
     width: 100%;
-    padding: 12px 0;
+    padding: 8px 0;
     background: #0d6efd;
     color: #fff;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
 }
-
 
 
 

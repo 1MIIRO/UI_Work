@@ -10,7 +10,7 @@ def get_connection():
     return mysql.connector.connect(
         host='localhost',
         user='root',
-        password='1234',
+        password='',
         database='bakery_busness'
     )
 
@@ -82,7 +82,7 @@ def login():
 
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM `user` WHERE user_name=%s AND user_password=%s", (username, password))
+    cursor.execute("SELECT * FROM `users` WHERE user_name=%s AND user_password=%s", (username, password))
     user = cursor.fetchone()
     cursor.close()
     conn.close()
@@ -117,7 +117,14 @@ def dashboard():
     cursor.close()
     conn.close()
 
-    return render_template('dashboard.html', user=user_info, products=products)
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT Table_db_id,  Table_number FROM tables ORDER BY  Table_number")
+    tables = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return render_template('dashboard.html', user=user_info, products=products,tables=tables)
 
 @app.route('/activity_billing_queue')
 def activity_billing_queue():
@@ -145,87 +152,60 @@ def activity_billing_queue():
 def activity_Tables():
     if 'user_id' not in session:
         return redirect(url_for('login_page'))
-    
+
     user_info = {
         "user_name": session.get('user_name'),
         "personal_name": session.get('personal_name'),
         "job_desc": session.get('job_desc')
     }
-    
+
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    
-    cursor.execute("""
-    SELECT 
-        t.Table_db_id,
-        t.Table_number,
-        t.table_floor,
-        CASE 
-            WHEN tr.table_reservation_number IS NOT NULL THEN 'reserved'
-            ELSE 'available'
-        END AS table_status,
-        tr.Date_reserved,
-        tr.number_of_guests
-    FROM tables AS t
-    LEFT JOIN table_reservations AS tr
-        ON t.Table_db_id = tr.Table_db_id
-    ORDER BY t.table_floor, t.Table_number;
-    """)
 
+    query = """
+        SELECT 
+            t.Table_db_id,
+            t.Table_number,
+            tf.floor_name AS table_floor,
 
+            COALESCE(tr.table_status, 'available') AS table_status,
+            tr.Date_reserved,
+            tr.number_of_people
+
+        FROM tables t
+
+        LEFT JOIN table_floor tf
+            ON t.Table_db_id = tf.Table_db_id
+
+        LEFT JOIN (
+            SELECT r1.*
+            FROM table_reservations r1
+            INNER JOIN (
+                SELECT Table_db_id, MAX(Date_reserved) AS max_date
+                FROM table_reservations
+                GROUP BY Table_db_id
+            ) r2
+            ON r1.Table_db_id = r2.Table_db_id
+            AND r1.Date_reserved = r2.max_date
+        ) tr
+            ON t.Table_db_id = tr.Table_db_id
+
+        ORDER BY tf.floor_name, t.Table_number
+    """
+
+    cursor.execute(query)
     all_tables = cursor.fetchall()
+
     cursor.close()
     conn.close()
 
-    return render_template('activity_Tables.html', user=user_info, tables=all_tables)
+    return render_template(
+        'activity_Tables.html',
+        user=user_info,
+        tables=all_tables
+    )
 
-@app.route('/update_tables', methods=['POST'])
-def update_tables():
-    data = request.json
-    changes = data.get('changes', [])
 
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    try:
-        for change in changes:
-            table_id = change['table_id']
-            status = change['status']
-            date_reserved = change.get('date_reserved') or None
-            number_of_guests = int(change.get('number_of_guests')) if change.get('number_of_guests') else None
-
-            # 1️⃣ Update the status for all tables
-            cursor.execute("""
-                UPDATE table_status
-                SET status = %s
-                WHERE table_id = %s
-            """, (status, table_id))
-
-            # 2️⃣ Handle reservations table
-            if status == 'reserved':
-                # Insert or update reservation
-                cursor.execute("""
-                    INSERT INTO table_reservations (table_id, Date_reserved, number_of_guests)
-                    VALUES (%s, %s, %s)
-                    ON DUPLICATE KEY UPDATE
-                        Date_reserved = VALUES(Date_reserved),
-                        number_of_guests = VALUES(number_of_guests)
-                """, (table_id, date_reserved, number_of_guests))
-            else:
-                # Delete reservation if table is no longer reserved
-                cursor.execute("""
-                    DELETE FROM table_reservations WHERE table_id = %s
-                """, (table_id,))
-
-        conn.commit()
-        return jsonify({'success': True, 'updated': len(changes)})
-
-    except Exception as e:
-        conn.rollback()
-        return jsonify({'success': False, 'error': str(e)})
-    finally:
-        cursor.close()
-        conn.close()
 
 @app.route('/activity_Order_history')
 def activity_Order_history():
@@ -237,8 +217,16 @@ def activity_Order_history():
         "personal_name": session.get('personal_name'),
         "job_desc": session.get('job_desc')
     }
+    
+    # Fetch all tables for the dropdown
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT Table_db_id,  Table_number FROM tables ORDER BY  Table_number")
+    tables = cursor.fetchall()
+    cursor.close()
+    conn.close()
 
-    return render_template('activity_Order_history.html',user=user_info)
+    return render_template('activity_Order_history.html',user=user_info,tables=tables)
 
 @app.route('/logout')
 def logout():
