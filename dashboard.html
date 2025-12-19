@@ -600,6 +600,52 @@
         }
 
 
+        
+
+const placeOrderBtn = document.querySelector('.big-action-btn');
+    const dropdownContent = document.querySelector('."dropdown-content_order_type');
+    const dropdownItems = document.querySelectorAll('.dropdown-item_order_type');
+
+    placeOrderBtn.addEventListener('click', () => {
+        const orderNumber = orderNumberDiv.innerText.trim();
+
+        if (!orderNumber || orderNumber === 'Order Number') {
+            alert('Please enter Order Number');
+            return;
+        }
+
+        fetch('/place_order_table', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                order_number: orderNumber
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert('Order placed successfully ✅');
+
+                // optional: lock editing after success
+                orderNumberDiv.contentEditable = false;
+            } else {
+                alert('Failed to place order ❌');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Server error ❌');
+        });
+    });
+
+
+
+
+
+
+
 </script>
 
 </body>
